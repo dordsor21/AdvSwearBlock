@@ -1,0 +1,87 @@
+##############################
+#                            #
+#     Advanced SwearBlock    #
+#        By dordsor21        #
+#                            #
+##############################
+#
+#
+#
+# Whether to use MySQL or not. !!Required for use of ignoring!!
+persistence: true
+# Enabled detecting messages with a lot of spaces l i k e t h i s. Limit is the maximum
+#  fraction of spaces divided by none-spaces allowed
+spaces:
+    enabled: true
+    limit: 0.45
+# Enables a cooldown (in ms) between chat messages
+cooldown:
+    enabled: true
+    length: 1500
+prefix: "&2[AdvSB]&r "
+SQL:
+    username: user
+    password: pass
+    database: asb
+    hostname: 127.0.0.1
+    port: 3306
+    autoreconnect: true
+    useSSL: false
+# If a chat packet contains an ignored player, the chat packet will not be sent!
+# !!Requires persistence true and a working MySQL connection!!
+ignoring:
+    enabled: true
+    # If the chat packet contains one of these strings, it cannot be ignored. Useful for
+    #  making sure broadcasts, admins, moderators etc cannot be ignored.
+    noIgnoringPacketIfContains:
+      - "[Broadcast]"
+      - "[Admin]"
+      - "[Moderator]"
+swearing:
+    # List of false-positives you receive. Examples below display words contains "ass"
+    not-blocked:
+      - asset
+      - pass
+      - class
+      - bass
+    # If a word contains a blocked word, and is less long than this value multiplied by the
+    #  length of the blocked word, the word will still get blocked.
+    # For example, a multiplier of 2 will block "fuckwit" if "fuck" is blocked, but not
+    #  "fucktard".
+    # Lower values will reduce the chance of false-positives, but require you to put more
+    #  swear-words containing smaller swear words in the swearlist.txt (makes the process
+    #  longer.
+    # Higher values mean you can skip adding words such as "fucktard" to swearlist.txt if you
+    #  have blocked the word "fuck" and have a multiplier higher than 2, making the process
+    #  faster.
+    # Minimum value of 1.
+    swearWordMultiplier: 1.5
+messages:
+    notPlayer: "Must be a player"
+    spaceLimit: "There's a lot of spaces in that message. Please don't spam!"
+    cooldown: "There is a {{cooldown}} second wait between messages to reduce spam."
+    noPermission: "No permission: {{permission}}"
+    ignoreUsage: "Usage &6/ig add [player] <player2> <player3> ..."
+    unignoreUsage: "Usage &6/ig remove [player] <player2> <player3> ..."
+    ignoreListUsage: "Usage &6/ig [add|remove|list] {[player] <player2> <player3> ...}"
+    swearBlockUsage: "Usage &6/sb [on|off]"
+    asbUsage: "Usage: &6/asb reload [swearList, noSwearList, messages, all]"
+    asbReloaded: "Reloaded {{component}}"
+    ignoringNoone: "You are not ignoring anyone."
+    ignoreSelf: "but why?"
+    ignoredPlayersSuccess: "You have ignored: {{players}}"
+    ignoredPlayersFailure: "UUID lookup failed for the following players: {{players}}"
+    ignorePlayersAlready: "You were already ignoring: {{players}}"
+    ignoredPlayerSuccess: "You have ignored {{player}}"
+    ignoredPlayerFailure: "UUID lookup failed for {{player}}"
+    ignorePlayerAlready: "You were already ignoring {{player}}"
+    unignoredPlayersSuccess: "You have unignored: {{players}}"
+    unignoredPlayersFailure: "UUID lookup failed for the following players: {{players}}"
+    unignorePlayersAlready: "You are not ignoring: {{players}}"
+    unignoredPlayerSuccess: "You have unignored {{player}}"
+    unignoredPlayerFailure: "UUID lookup failed for {{player}}"
+    unignorePlayerAlready: "You are not ignoring {{player}}"
+    listIgnoredPlayers: "You are ignoring the following players: {{players}}"
+    swearBlockOn: "Toggles swear-block on"
+    swearBlockOff: "Toggles swear-block off"
+    firstSwear: "You can toggle the swear filter off with /sb off"
