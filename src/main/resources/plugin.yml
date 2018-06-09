@@ -13,3 +13,15 @@ commands:
     swearblock:
       description: Toggle swear block.
       aliases: [sb, swearwords, swearlist]
+permissions:
+    asb.*:
+      description: Gives access to all AdvSwearBlock commands
+      children:
+        asb.admin: true
+        asb.ignore: true
+        asb.unignore: true
+        asb.list: true
+        asb.swear: true
+        asb.swear.toggle: true
+        asb.bypass.cooldown: true
+        asb.bypass.spacecheck: true
