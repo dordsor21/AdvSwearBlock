@@ -30,12 +30,11 @@ public class PlayerChatPacketListener implements Listener {
                     UUID puuid = p.getUniqueId();
                     if (p.hasMetadata("swearBlock") || (pl.ignoring && pl.ignore.isIgnorer(puuid))) {
                         boolean actuallyEdited = false;//false unless the chat packet has actually been edited. improves performance and reduces bugs
-                        String aRMsg = e.getPacket().getChatComponents().read(0).getJson().replace("{\"extra\":", "")
-                                .replace("],\"text\":\"\"}", "]");//parse the packet to be nice and readable.
+                        String aRMsg = Json.fromReadJson(e.getPacket().getChatComponents().read(0).getJson());//parse the packet to be nice and readable.
                         String msg = aRMsg;//debug purposes.
                         if (!(msg.contains(",{\"color\":\"gold\",\"text\":\"\"}]") || msg.contains("\"action\":\"run_command\",")
                                 || msg.contains(",\"hoverEvent\":{\"action\":\"") || msg.equals("{\"text\":\"\"}"))) {//#circumstances in which we don't want to edit packets
-                            String cCMsg = Json.jsonToColourCode(msg.replace("&", "§§"));//if a player puts &e in chat, it won't make it a colour when converting back to Json
+                            String cCMsg = Json.jsonToColourCode(msg.replace("&", "§§"), "&f");//if a player puts &e in chat, it won't make it a colour when converting back to Json
                             msg = cCMsg;
                             String m = Json.stripCodes(msg);
                             if (pl.ignoring && pl.ignore.isIgnorer(puuid)) {//test if packet contains an ignored player's name (SUPER OP)
@@ -65,7 +64,7 @@ public class PlayerChatPacketListener implements Listener {
                                                 p.removeMetadata("firstSwear", pl);
                                                 Bukkit.getScheduler().runTaskLater(pl, () -> p.sendMessage(pl.messages.get("firstSwear")), 2);
                                             }
-                                            c.append(w.replaceAll("((?<!&)[a-f\\d]|[g-zA-Z_])", "*")).append(" ");
+                                            c.append(w.replaceAll("(((?<!&)[a-fk-o\\d])|[g-jp-zA-Z_])", "*")).append(" ");
                                             actuallyEdited = true;
                                             continue;
                                         }

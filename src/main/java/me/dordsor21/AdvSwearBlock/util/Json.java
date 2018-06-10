@@ -2,6 +2,11 @@ package me.dordsor21.AdvSwearBlock.util;
 
 public class Json {
 
+
+    public static String fromReadJson(String input) {
+        return input.replace("{\"extra\":", "").replace("],\"text\":\"\"}", "]");
+    }
+
     public static String stripCodes(String m) {
         return m
                 .replace("&0", "")
@@ -54,7 +59,7 @@ public class Json {
                 .replace("\"text\":\"\"},{", "");
     }
 
-    public static String jsonToColourCode(String msg) {
+    public static String jsonToColourCode(String msg, String reset) {
         return msg
                 .replaceAll("\"clickEvent\":\\{\"action\":\".*?\"\\},", "")
                 .replace("[{\"color\":\"black\",\"text\":\"", "&0")
@@ -162,8 +167,8 @@ public class Json {
                 .replace("\"strikethrough\":true,\"text\":\"", "&m")
                 .replace("\"underlined\":true,\"text\":\"", "&n")
                 .replace("\"italic\":true,\"text\":\"", "&o")
-                .replace("[{\"text\":\"", "&f")
-                .replace("{\"text\":\"", "&f")
+                .replace("[{\"text\":\"", reset)
+                .replace("{\"text\":\"", reset)
                 .replace("\"},", "")
                 .replace("\"}]", "");
     }

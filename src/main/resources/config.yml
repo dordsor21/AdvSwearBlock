@@ -40,6 +40,8 @@ ignoring:
 swearing:
     # Number of swear words displayed per page of /asb list
     listPageSize: 10
+    # Also block swear words on signs
+    signs: true
     # List of false-positives you receive. Examples below display words contains "ass"
     not-blocked:
       - asset

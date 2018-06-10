@@ -6,6 +6,7 @@ import me.dordsor21.AdvSwearBlock.cmd.SwearWordCmd;
 import me.dordsor21.AdvSwearBlock.listener.ChatListener;
 import me.dordsor21.AdvSwearBlock.listener.JoinLeaveListener;
 import me.dordsor21.AdvSwearBlock.listener.PlayerChatPacketListener;
+import me.dordsor21.AdvSwearBlock.listener.PlayerSignPacketListener;
 import me.dordsor21.AdvSwearBlock.util.Ignore;
 import me.dordsor21.AdvSwearBlock.util.SQL;
 import me.dordsor21.AdvSwearBlock.util.SwearList;
@@ -63,6 +64,8 @@ public class Main extends JavaPlugin {
         getCommand("asb").setExecutor(new MainCmd(this));
 
         new PlayerChatPacketListener(this);
+        if (getConfig().getBoolean("swearing.signs", true))
+            new PlayerSignPacketListener(this);
         new ChatListener(this);
 
         if (persistence) {
