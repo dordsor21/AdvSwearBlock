@@ -5,6 +5,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+import java.io.IOException;
+import java.util.Arrays;
+
 public class MainCmd implements CommandExecutor {
 
     private Main plugin;
@@ -15,18 +18,68 @@ public class MainCmd implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String strng, String[] args) {
-        if (args.length < 2) {
-            sender.sendMessage(plugin.messages.get("asbUsage"));
+        if (!sender.hasPermission("asb.admin")) {
+            sender.sendMessage(plugin.messages.get("noPermission").replace("{{permission}}", "asb.admin"));
             return true;
         }
-        if (sender.hasPermission("asb.admin"))
-            reload(sender, args[1]);
-        else
-            sender.sendMessage(plugin.messages.get("noPermission").replace("{{permission}}", "asb.admin"));
+        if(args.length == 0) {
+            sender.sendMessage(plugin.messages.get("asbReloadUsage"));
+            sender.sendMessage(plugin.messages.get("asbSwearUsage"));
+            return true;
+        }
+        switch (args[0].toLowerCase()) {
+            case "reload":
+            case "r":
+                reload(sender, args);
+                break;
+            case "add":
+                if (args.length > 1) {
+                    try {
+                        plugin.swearList.add(sender, Arrays.copyOfRange(args, 1, args.length));
+                    } catch (IOException e) {
+                        sender.sendMessage(plugin.messages.get("error").replace("{{error}}", e.getStackTrace()[0].toString()));
+                        e.printStackTrace();
+                    }
+                } else
+                    sender.sendMessage(plugin.messages.get("asbAddUsage"));
+                break;
+            case "remove":
+                if (args.length > 1)
+                    try {
+                        plugin.swearList.remove(sender, Arrays.copyOfRange(args, 1, args.length));
+                    } catch (IOException e) {
+                        sender.sendMessage(plugin.messages.get("error").replace("{{error}}", e.getStackTrace()[0].toString()));
+                        e.printStackTrace();
+                    }
+                else
+                    sender.sendMessage(plugin.messages.get("asbRemoveUsage"));
+                break;
+            case "list":
+                if(args.length > 1) {
+                    if(args[1].matches("^\\d+$"))
+                        plugin.swearList.list(sender, Integer.valueOf(args[1]));
+                    else
+                        sender.sendMessage(plugin.messages.get("notInteger"));
+                    break;
+                }
+                plugin.swearList.list(sender, 1);
+                break;
+            default:
+                sender.sendMessage(plugin.messages.get("asbReloadUsage"));
+                sender.sendMessage(plugin.messages.get("asbSwearUsage"));
+        }
         return true;
     }
 
-    private void reload(CommandSender sender, String component) {
+    private void reload(CommandSender sender, String[] args) {
+        if(args.length == 1) {
+            plugin.reloadSwearList();
+            plugin.reloadNoSwearList();
+            plugin.reloadMessages();
+            sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", "all"));
+            return;
+        }
+        String component = args[1];
         switch (component.toLowerCase()) {
             case "swearlist":
                 plugin.reloadSwearList();
@@ -36,7 +89,7 @@ public class MainCmd implements CommandExecutor {
                 plugin.reloadNoSwearList();
                 sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", component));
                 break;
-            case"messages":
+            case "messages":
                 plugin.reloadMessages();
                 sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", component));
                 break;
@@ -47,7 +100,10 @@ public class MainCmd implements CommandExecutor {
                 sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", component));
                 break;
             default:
-                sender.sendMessage(plugin.messages.get("asbUsage"));
+                plugin.reloadSwearList();
+                plugin.reloadNoSwearList();
+                plugin.reloadMessages();
+                sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", "all"));
         }
     }
 }

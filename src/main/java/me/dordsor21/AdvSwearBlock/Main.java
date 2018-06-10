@@ -74,14 +74,17 @@ public class Main extends JavaPlugin {
     }
 
     public void reloadNoSwearList() {
+        reloadConfig();
         ignoreSwear = getConfig().getStringList("swearing.not-blocked");
     }
 
     public void reloadSwearList() {
+        reloadConfig();
         swearList = new SwearList(this);
     }
 
     public void reloadMessages() {
+        reloadConfig();
         messages = new HashMap<>();
         for (String message : getConfig().getConfigurationSection("messages").getValues(false).keySet())
             messages.put(message, ChatColor.translateAlternateColorCodes('&', prefix + getConfig().getString("messages." + message)));

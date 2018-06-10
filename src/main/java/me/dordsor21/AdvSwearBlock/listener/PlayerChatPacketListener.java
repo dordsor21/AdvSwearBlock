@@ -27,7 +27,8 @@ public class PlayerChatPacketListener implements Listener {
             public void onPacketSending(PacketEvent e) {
                 if (e.getPacketType() == PacketType.Play.Server.CHAT) {
                     Player p = e.getPlayer();
-                    if (p.hasMetadata("swearBlock")) {
+                    UUID puuid = p.getUniqueId();
+                    if (p.hasMetadata("swearBlock") || (pl.ignoring && pl.ignore.isIgnorer(puuid))) {
                         boolean actuallyEdited = false;//false unless the chat packet has actually been edited. improves performance and reduces bugs
                         String aRMsg = e.getPacket().getChatComponents().read(0).getJson().replace("{\"extra\":", "")
                                 .replace("],\"text\":\"\"}", "]");//parse the packet to be nice and readable.
@@ -37,8 +38,7 @@ public class PlayerChatPacketListener implements Listener {
                             String cCMsg = Json.jsonToColourCode(msg.replace("&", "§§"));//if a player puts &e in chat, it won't make it a colour when converting back to Json
                             msg = cCMsg;
                             String m = Json.stripCodes(msg);
-                            UUID puuid = p.getUniqueId();
-                            if (pl.ignore.isIgnorer(puuid)) {//test if packet contains an ignored player's name (SUPER OP)
+                            if (pl.ignoring && pl.ignore.isIgnorer(puuid)) {//test if packet contains an ignored player's name (SUPER OP)
                                 for (String ignoree : pl.ignore.getIgnored(puuid)) {
                                     if (m.toLowerCase().contains(ignoree.toLowerCase()) && Arrays.stream(kw).parallel().noneMatch(m.toLowerCase()::startsWith)) {
                                         e.setCancelled(true);
@@ -50,7 +50,7 @@ public class PlayerChatPacketListener implements Listener {
                             StringBuilder c = new StringBuilder("{\"text\":\"");
                             for (String w : words) {//iterate through all the words in the packet's message
                                 String temp = Json.stripCodes(w.replaceAll("[^a-zA-Z\\d&_]", ""));
-                                if (p.hasMetadata("swearBlock") && !pl.ignoreSwear.contains(temp.toLowerCase())) {//only test for swear words if they have the block on
+                                if (p.hasMetadata("swearBlock") && !pl.ignoreSwear.contains(temp.toLowerCase()) && Bukkit.getPlayer(temp) == null) {
                                     try {
                                         String testTemp = temp.replaceAll("\\d", "").replace("_", "").toLowerCase();
 

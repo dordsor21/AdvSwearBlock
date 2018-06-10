@@ -10,7 +10,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 
 public class ChatListener implements Listener {
-    //parses messages as they're sent by a player to lowercase and all UPPERCASE words.
 
     private Main plugin;
     private Long cooldown;
@@ -32,7 +31,7 @@ public class ChatListener implements Listener {
     public void onChatEvent(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
         if (cd && !p.hasPermission("asb.bypass.cooldown")) {
-            if(p.hasMetadata("cooldown")) {
+            if (p.hasMetadata("cooldown")) {
                 p.sendMessage(plugin.messages.get("cooldown").replace("{{cooldown}}", String.valueOf(cooldown.doubleValue() / 20)));
                 e.setCancelled(true);
                 return;
