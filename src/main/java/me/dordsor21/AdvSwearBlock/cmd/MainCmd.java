@@ -1,3 +1,9 @@
+/*
+ *  This file is subject to the terms and conditions defined in
+ *  file 'LICENSE.txt', which is part of this source code package.
+ *  Original by dordsor21 : https://gitlab.com/dordsor21/AdvSwearBlock/blob/master/LICENSE
+ */
+
 package me.dordsor21.AdvSwearBlock.cmd;
 
 import me.dordsor21.AdvSwearBlock.Main;
