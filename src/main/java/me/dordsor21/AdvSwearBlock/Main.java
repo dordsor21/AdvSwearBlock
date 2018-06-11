@@ -1,5 +1,7 @@
 package me.dordsor21.AdvSwearBlock;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import me.dordsor21.AdvSwearBlock.cmd.IgnoreCmd;
 import me.dordsor21.AdvSwearBlock.cmd.MainCmd;
 import me.dordsor21.AdvSwearBlock.cmd.SwearWordCmd;
@@ -12,6 +14,7 @@ import me.dordsor21.AdvSwearBlock.util.SQL;
 import me.dordsor21.AdvSwearBlock.util.SwearList;
 import me.dordsor21.AdvSwearBlock.util.UUIDs;
 import org.bukkit.ChatColor;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -30,7 +33,13 @@ public class Main extends JavaPlugin {
     public UUIDs uuids;
     public Boolean persistence;
     public Boolean ignoring;
+    private Boolean signs;
     public Map<String, String> messages;
+    private PlayerChatPacketListener playerChatPacketListener;
+    private PlayerSignPacketListener playerSignPacketListener;
+    private ChatListener chatListener;
+    private JoinLeaveListener joinLeaveListener;
+    private ProtocolManager pM;
 
     @Override
     public void onEnable() {
@@ -39,10 +48,9 @@ public class Main extends JavaPlugin {
 
         saveDefaultConfig();
 
-        prefix = getConfig().getString("prefix");
-        persistence = getConfig().getBoolean("persistence");
-        ignoring = getConfig().getBoolean("ignoring.enabled");
+        loadConfigValues();
         messages = new HashMap<>();
+
         for (String message : getConfig().getConfigurationSection("messages").getValues(false).keySet())
             messages.put(message, ChatColor.translateAlternateColorCodes('&', prefix + getConfig().getString("messages." + message)));
 
@@ -51,7 +59,6 @@ public class Main extends JavaPlugin {
             ignoring = false;
         }
 
-        ignoreSwear = getConfig().getStringList("swearing.not-blocked");
         uuids = new UUIDs(this);
 
         if (ignoring) {
@@ -62,18 +69,28 @@ public class Main extends JavaPlugin {
         getCommand("swearblock").setExecutor(new SwearWordCmd(this));
         getCommand("asb").setExecutor(new MainCmd(this));
 
-        new PlayerChatPacketListener(this);
-        if (getConfig().getBoolean("swearing.signs", true))
-            new PlayerSignPacketListener(this);
-        new ChatListener(this);
+        pM = ProtocolLibrary.getProtocolManager();
+
+        playerChatPacketListener = new PlayerChatPacketListener(this, pM);
+        if (signs)
+            playerSignPacketListener = new PlayerSignPacketListener(this, pM);
+        chatListener = new ChatListener(this);
 
         if (persistence) {
             sql = new SQL(this);
         }
 
-        new JoinLeaveListener(this);
+        joinLeaveListener = new JoinLeaveListener(this);
 
         swearList = new SwearList(this);
+    }
+
+    private void loadConfigValues(){
+        prefix = getConfig().getString("prefix");
+        persistence = getConfig().getBoolean("persistence");
+        ignoring = getConfig().getBoolean("ignoring.enabled");
+        ignoreSwear = getConfig().getStringList("swearing.not-blocked");
+        signs = getConfig().getBoolean("swearing.signs", true);
     }
 
     public void reloadNoSwearList() {
@@ -83,6 +100,17 @@ public class Main extends JavaPlugin {
 
     public void reloadSwearList() {
         reloadConfig();
+        pM.removePacketListeners(this);
+        HandlerList.unregisterAll(playerChatPacketListener);
+        HandlerList.unregisterAll(playerSignPacketListener);
+        HandlerList.unregisterAll(chatListener);
+        HandlerList.unregisterAll(joinLeaveListener);
+        loadConfigValues();
+        playerChatPacketListener = new PlayerChatPacketListener(this, pM);
+        if (signs)
+            playerSignPacketListener = new PlayerSignPacketListener(this, pM);
+        chatListener = new ChatListener(this);
+        joinLeaveListener = new JoinLeaveListener(this);
         swearList = new SwearList(this);
     }
 

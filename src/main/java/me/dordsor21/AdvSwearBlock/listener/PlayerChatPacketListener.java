@@ -1,7 +1,6 @@
 package me.dordsor21.AdvSwearBlock.listener;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
@@ -9,18 +8,23 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import me.dordsor21.AdvSwearBlock.Main;
 import me.dordsor21.AdvSwearBlock.util.Json;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class PlayerChatPacketListener implements Listener {
-    public PlayerChatPacketListener(Main pl) {
+
+    public PlayerChatPacketListener(Main pl, ProtocolManager pM) {
         String[] kw = pl.getConfig().getStringList("ignoring.noIgnoringPacketIfContains").toArray(new String[0]);//If the packet contains one of these strings, it cannot be ignored
         double multiplier = pl.getConfig().getDouble("swearing.swearWordMultiplier") >= 1 ? pl.getConfig().getDouble("swearing.swearWordMultiplier") : 1;
-        ProtocolManager pM = ProtocolLibrary.getProtocolManager();
+        int incr = pl.getConfig().getInt("swearing.noMultiplierIncrement");
         Bukkit.getPluginManager().registerEvents(this, pl);
         pM.addPacketListener(new PacketAdapter(pl, ListenerPriority.HIGHEST, PacketType.Play.Server.CHAT) {
             @Override
@@ -50,25 +54,30 @@ public class PlayerChatPacketListener implements Listener {
                             for (String w : words) {//iterate through all the words in the packet's message
                                 String temp = Json.stripCodes(w.replaceAll("[^a-zA-Z\\d&_]", ""));
                                 if (p.hasMetadata("swearBlock") && !pl.ignoreSwear.contains(temp.toLowerCase()) && Bukkit.getPlayer(temp) == null) {
-                                    try {
-                                        String testTemp = temp.replaceAll("\\d", "").replace("_", "").toLowerCase();
+                                    String testTemp = temp.replaceAll("\\d", "").replace("_", "").toLowerCase();
 
-                                        //Java 8 Streams (very very fast)                          [-this is the important bit-] [-puts all +'ves into a list-]
-                                        List<String> bads = pl.swearList.getList().parallelStream().filter(testTemp::contains).collect(Collectors.toList());
-                                        String bad = "";
-                                        for (String potential : bads)//finds longest swear words of list from above.
-                                            if (potential.length() > bad.length())
-                                                bad = potential;
-                                        if (!bad.equals("") && !bad.isEmpty() && (temp.length() < multiplier * bad.length())) { // a couple of things to reduce false +'ve
-                                            if (p.hasMetadata("firstSwear")) {//sends a message on how to toggle if it's the first blocked-swear-word after login.
-                                                p.removeMetadata("firstSwear", pl);
-                                                Bukkit.getScheduler().runTaskLater(pl, () -> p.sendMessage(pl.messages.get("firstSwear")), 2);
-                                            }
-                                            c.append(w.replaceAll("(((?<!&)[a-fk-o\\d])|[g-jp-zA-Z_])", "*")).append(" ");
-                                            actuallyEdited = true;
-                                            continue;
-                                        }
-                                    } catch (NoSuchElementException ignored) {
+                                    if (pl.ignoreSwear.contains(testTemp))
+                                        continue;
+
+                                    //Java 8 Streams (very very fast)                          [-this is the important bit-] [-puts all +'ves into a list-]
+                                    List<String> badmul = pl.swearList.getList().get("multiplier").parallelStream().filter(testTemp::contains).collect(Collectors.toList());
+                                    List<String> badt = pl.swearList.getList().get("nomultiplier").parallelStream().filter(testTemp::contains).collect(Collectors.toList());
+                                    String bad1 = null;
+                                    String bad2 = null;
+                                    boolean multiple = false;
+                                    if (!(badmul.size() > 1 || badt.size() > 1
+                                            || (badmul.size() > 0 && StringUtils.countMatches(testTemp, badmul.get(0)) > 1)
+                                            || (badt.size() > 0 && StringUtils.countMatches(testTemp, badt.get(0)) > 1))) {
+                                        bad1 = badmul.size() > 0 ? badmul.get(0) : null;
+                                        bad2 = badt.size() > 0 ? badt.get(0) : null;
+                                    } else {
+                                        multiple = true;
+                                    }
+                                    if (multiple || (bad1 != null && !bad1.equals("") && !bad1.isEmpty() && (testTemp.length() <= multiplier * bad1.length()))
+                                            || (bad2 != null && testTemp.length() <= bad2.length() + incr)) {
+                                        c.append(w.replaceAll("(((?<!&)[a-fk-o\\d])|[g-jp-zA-Z_])", "*")).append(" ");
+                                        actuallyEdited = true;
+                                        continue;
                                     }
                                 }
                                 //Tests for URL so we don't break URLs. Two pieces of regex to catch everything.

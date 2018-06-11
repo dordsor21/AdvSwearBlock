@@ -50,18 +50,22 @@ swearing:
       - pass
       - class
       - bass
-    # If a word contains a blocked word, and is less long than this value multiplied by the
-    #  length of the blocked word, the word will still get blocked.
-    # For example, a multiplier of 2 will block "fuckwit" if "fuck" is blocked, but not
-    #  "fucktard".
+    # If a word contains a blocked word, and the length is less than or equal to this value
+    #  multiplied by the length of the blocked word in length, the word will still get blocked.
+    # For example, a multiplier of 2 will block "fucktard" if "fuck" is blocked, but not
+    #  "fucktards".
     # Lower values will reduce the chance of false-positives, but require you to put more
-    #  swear-words containing smaller swear words in the swearlist.txt (makes the process
+    #  swear-words containing smaller swear words in the swearlist.yml (makes the process
     #  longer.
-    # Higher values mean you can skip adding words such as "fucktard" to swearlist.txt if you
-    #  have blocked the word "fuck" and have a multiplier higher than 2, making the process
+    # Higher values mean you can skip adding words such as "fucktard" to swearlist.yml if you
+    #  have blocked the word "fuck" and have a multiplier of 2 or higher, making the process
     #  faster.
     # Minimum value of 1.
-    swearWordMultiplier: 1.5
+    swearWordMultiplier: 2
+    # For words that do not have multiplier applied, this is the increment of swear-word
+    #  length that will be replaced. For example a value of 1 will censor "wanks" but not
+    #  "wanked" if "wank" is added to the noMultiplier list is swearlist.yml
+    noMultiplierIncrement: 2
 messages:
     error: "&4Error. See console."
     notInteger: "Not an integer."
@@ -74,9 +78,10 @@ messages:
     ignoreListUsage: "Usage &6/ig [add|remove|list] {[player] <player2> <player3> ...}"
     swearBlockUsage: "Usage &6/sb [on|off]"
     asbReloadUsage: "Usage: &6/asb reload [swearList, noSwearList, messages, all]"
-    asbSwearUsage: "Usage: &6/asb [add|remove|list] {[word1] <word2> <word3> ...} [page number]"
-    asbAddUsage: "Usage: &6/asb add {[word1] <word2> <word3> ...}"
-    asbRemoveUsage: "Usage: &6/asb remove {[word1] <word2> <word3> ...}"
+    asbSwearUsage: "Usage: &6/asb [add|remove|list] [m|nom] {[word1] <word2> <word3> ...|<page number>} "
+    asbAddUsage: "Usage: &6/asb add [m(ultiplier)|nom(ultiplier)]] {[word1] <word2> <word3> ...}"
+    asbRemoveUsage: "Usage: &6/asb remove [m(ultiplier)|nom(ultiplier)] {[word1] <word2> <word3> ...}"
+    asbListUsage: "Usage: &r/asb list [m(ultiplier)|nom(ultiplier)] <page number>"
     asbReloaded: "Reloaded {{component}}."
     ignoringNoone: "You are not ignoring anyone."
     ignoreSelf: "but why?"
@@ -100,5 +105,5 @@ messages:
     badWordAddFailure: "The words {{words}} were already added."
     badWordRemoveSuccess: "You successfully removed {{words}} from the swear-block."
     badWordRemoveFailure: "The words {{words}} were not in the swear-block."
-    listBadWordsTop: "Showing {{count}} of {{total}} swear words:"
+    listBadWordsTop: "Showing {{count}} of {{total}} {{multiplier}} swear words:"
     listBadWordsBottom: "Page {{page}} of {{pagecount}}."

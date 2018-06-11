@@ -5,7 +5,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 public class MainCmd implements CommandExecutor {
@@ -22,7 +21,7 @@ public class MainCmd implements CommandExecutor {
             sender.sendMessage(plugin.messages.get("noPermission").replace("{{permission}}", "asb.admin"));
             return true;
         }
-        if(args.length == 0) {
+        if (args.length == 0) {
             sender.sendMessage(plugin.messages.get("asbReloadUsage"));
             sender.sendMessage(plugin.messages.get("asbSwearUsage"));
             return true;
@@ -33,36 +32,43 @@ public class MainCmd implements CommandExecutor {
                 reload(sender, args);
                 break;
             case "add":
-                if (args.length > 1) {
-                    try {
-                        plugin.swearList.add(sender, Arrays.copyOfRange(args, 1, args.length));
-                    } catch (IOException e) {
-                        sender.sendMessage(plugin.messages.get("error").replace("{{error}}", e.getStackTrace()[0].toString()));
-                        e.printStackTrace();
+                if (args.length > 2) {
+                    if (!Arrays.asList(new String[]{"m", "nom", "multiplier", "nomultiplier"}).contains(args[1].toLowerCase())) {
+                        sender.sendMessage(plugin.messages.get("asbListUsage"));
+                        break;
                     }
+                    plugin.swearList.add(sender, Arrays.copyOfRange(args, 2, args.length), args[1]);
+
                 } else
                     sender.sendMessage(plugin.messages.get("asbAddUsage"));
                 break;
             case "remove":
-                if (args.length > 1)
-                    try {
-                        plugin.swearList.remove(sender, Arrays.copyOfRange(args, 1, args.length));
-                    } catch (IOException e) {
-                        sender.sendMessage(plugin.messages.get("error").replace("{{error}}", e.getStackTrace()[0].toString()));
-                        e.printStackTrace();
+                if (args.length > 2) {
+                    if (!Arrays.asList(new String[]{"m", "nom", "multiplier", "nomultiplier"}).contains(args[1].toLowerCase())) {
+                        sender.sendMessage(plugin.messages.get("asbListUsage"));
+                        break;
                     }
-                else
+                    plugin.swearList.remove(sender, Arrays.copyOfRange(args, 2, args.length), args[1]);
+                } else
                     sender.sendMessage(plugin.messages.get("asbRemoveUsage"));
                 break;
             case "list":
-                if(args.length > 1) {
-                    if(args[1].matches("^\\d+$"))
-                        plugin.swearList.list(sender, Integer.valueOf(args[1]));
-                    else
-                        sender.sendMessage(plugin.messages.get("notInteger"));
+                if (args.length > 1) {
+                    if (!Arrays.asList(new String[]{"m", "nom", "multiplier", "nomultiplier"}).contains(args[1].toLowerCase())) {
+                        sender.sendMessage(plugin.messages.get("asbListUsage"));
+                        break;
+                    }
+                    if (args.length > 2) {
+                        if (args[1].matches("^\\d+$"))
+                            plugin.swearList.list(sender, Integer.valueOf(args[2]), args[1]);
+                        else
+                            sender.sendMessage(plugin.messages.get("notInteger"));
+                        break;
+                    }
+                    plugin.swearList.list(sender, 1, args[1]);
                     break;
                 }
-                plugin.swearList.list(sender, 1);
+                sender.sendMessage(plugin.messages.get("asbListUsage"));
                 break;
             default:
                 sender.sendMessage(plugin.messages.get("asbReloadUsage"));
@@ -72,7 +78,7 @@ public class MainCmd implements CommandExecutor {
     }
 
     private void reload(CommandSender sender, String[] args) {
-        if(args.length == 1) {
+        if (args.length == 1) {
             plugin.reloadSwearList();
             plugin.reloadNoSwearList();
             plugin.reloadMessages();
