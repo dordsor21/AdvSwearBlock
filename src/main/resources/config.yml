@@ -38,6 +38,8 @@ ignoring:
       - "[Admin]"
       - "[Moderator]"
 swearing:
+    # Default for swear-block
+    defaultStatus: true
     # Number of swear words displayed per page of /asb list
     listPageSize: 10
     # Also block swear words on signs

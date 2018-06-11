@@ -59,7 +59,6 @@ public class Main extends JavaPlugin {
             getCommand("ignore").setExecutor(new IgnoreCmd(this, ignore));
         }
 
-
         getCommand("swearblock").setExecutor(new SwearWordCmd(this));
         getCommand("asb").setExecutor(new MainCmd(this));
 
@@ -70,8 +69,9 @@ public class Main extends JavaPlugin {
 
         if (persistence) {
             sql = new SQL(this);
-            new JoinLeaveListener(this);
         }
+
+        new JoinLeaveListener(this);
 
         swearList = new SwearList(this);
     }

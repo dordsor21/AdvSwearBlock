@@ -28,8 +28,10 @@ public class JoinLeaveListener implements Listener {
     @EventHandler()
     public void onPlayerLeave(final PlayerQuitEvent e) {
         Player pl = e.getPlayer();
-        plugin.ignore.removeIgnorer(pl.getUniqueId());
-        plugin.sql.setSwearBlock(pl.getUniqueId(), pl.hasMetadata("swearBlock"));
+        if (plugin.ignoring)
+            plugin.ignore.removeIgnorer(pl.getUniqueId());
+        if (plugin.persistence)
+            plugin.sql.setSwearBlock(pl.getUniqueId(), pl.hasMetadata("swearBlock"));
     }
 
     @EventHandler()
@@ -55,7 +57,7 @@ public class JoinLeaveListener implements Listener {
                 } catch (StringIndexOutOfBoundsException ignored) {
                 }
             }
-            if ((plugin.persistence && plugin.sql.swearBlock(p.getUniqueId())) || plugin.getConfig().getBoolean("defaultStatus")) {//turns swearblock on (persistant cross-network n stuff)
+            if ((plugin.persistence && plugin.sql.swearBlock(p.getUniqueId())) || plugin.getConfig().getBoolean("swearing.defaultStatus")) {//turns swearblock on (persistant cross-network n stuff)
                 p.setMetadata("swearBlock", new FixedMetadataValue(plugin, true));
                 if (firstSwear)
                     p.setMetadata("firstSwear", new FixedMetadataValue(plugin, true));
