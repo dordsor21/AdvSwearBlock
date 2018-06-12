@@ -74,12 +74,11 @@ public class PlayerSignPacketListener implements Listener {
                                     both.addAll(nomList);
                                     String regexedMsg = text;
                                     for (String word : both) {
-                                        StringBuilder regex = new StringBuilder("(((&)[a-fk-o\\d])|(^|(?<=\\s)))(").append(word.charAt(0)).append("(((&)[a-fk-o\\d]))|").append(word.charAt(0)).append(")+");
+                                        StringBuilder regex = new StringBuilder("((?<=&[a-fk-o\\d])|(^|(?<=\\s)))(").append(word.charAt(0)).append("((&[a-fk-o\\d]))|").append(word.charAt(0)).append(")+");
                                         for (int i = 1; i < word.length(); i++)
-                                            regex.append("\\s*(").append(word.charAt(i)).append("|(((&)[a-fk-o\\d])))+");
-                                        regex.append("(?=\\s|\\b)");
+                                            regex.append("\\s*((").append(word.charAt(i)).append("|&[a-fk-o\\d]))+");
                                         Matcher matcher = Pattern.compile(regex.toString()).matcher(regexedMsg);
-                                        while (matcher.find() && matcher.group().contains(" ")) {
+                                        while (matcher.find() && matcher.group().length() > word.length()) {
                                             regexedMsg = regexedMsg.replace(matcher.group(), new String(new char[matcher.group().replace(" ", "").length()]).replace('\0', '*'));
                                             actuallyEdited = true;
                                         }
@@ -193,12 +192,11 @@ public class PlayerSignPacketListener implements Listener {
                                 both.addAll(nomList);
                                 String regexedMsg = text;
                                 for (String word : both) {
-                                    StringBuilder regex = new StringBuilder("(((&)[a-fk-o\\d])|(^|(?<=\\s)))(").append(word.charAt(0)).append("(((&)[a-fk-o\\d]))|").append(word.charAt(0)).append(")+");
+                                    StringBuilder regex = new StringBuilder("((?<=&[a-fk-o\\d])|(^|(?<=\\s)))(").append(word.charAt(0)).append("((&[a-fk-o\\d]))|").append(word.charAt(0)).append(")+");
                                     for (int i = 1; i < word.length(); i++)
-                                        regex.append("\\s*(").append(word.charAt(i)).append("|(((&)[a-fk-o\\d])))+");
-                                    regex.append("(?=\\s|\\b)");
+                                        regex.append("\\s*((").append(word.charAt(i)).append("|&[a-fk-o\\d]))+");
                                     Matcher matcher = Pattern.compile(regex.toString()).matcher(regexedMsg);
-                                    while (matcher.find() && matcher.group().contains(" ")) {
+                                    while (matcher.find() && matcher.group().length() > word.length()) {
                                         regexedMsg = regexedMsg.replace(matcher.group(), new String(new char[matcher.group().replace(" ", "").length()]).replace('\0', '*'));
                                         actuallyEdited = true;
                                     }
