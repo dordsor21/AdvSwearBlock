@@ -19,10 +19,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class PlayerChatPacketListener implements Listener {
@@ -55,6 +54,22 @@ public class PlayerChatPacketListener implements Listener {
                                     }
                                 }
                             }
+                            List<String> mList = pl.swearList.getList().get("multiplier");
+                            List<String> nomList = pl.swearList.getList().get("nomultiplier");
+                            List<String> both = new ArrayList<>();
+                            both.addAll(mList);
+                            both.addAll(nomList);
+                            for (String word : both) {
+                                StringBuilder regex = new StringBuilder("(((&)[a-fk-o\\d])|(^|(?<=\\s)))(").append(word.charAt(0)).append("(((&)[a-fk-o\\d]))|").append(word.charAt(0)).append(")+");
+                                for (int i = 1; i < word.length(); i++)
+                                    regex.append("\\s*(").append(word.charAt(i)).append("|(((&)[a-fk-o\\d])))+");
+                                regex.append(")(?=\\s|\\b)");
+                                Matcher matcher = Pattern.compile(regex.toString()).matcher(msg);
+                                while (matcher.find() && matcher.group().contains(" ")) {
+                                    msg = msg.replace(matcher.group(), new String(new char[matcher.group().replace(" ", "").length()]).replace('\0', '*'));
+                                    actuallyEdited = true;
+                                }
+                            }
                             String[] words = msg.split(" ");
                             StringBuilder c = new StringBuilder("{\"text\":\"");
                             for (String w : words) {//iterate through all the words in the packet's message
@@ -65,9 +80,9 @@ public class PlayerChatPacketListener implements Listener {
                                     if (pl.ignoreSwear.contains(testTemp))
                                         continue;
 
-                                    //Java 8 Streams (very very fast)                          [-this is the important bit-] [-puts all +'ves into a list-]
-                                    List<String> badmul = pl.swearList.getList().get("multiplier").parallelStream().filter(testTemp::contains).collect(Collectors.toList());
-                                    List<String> badt = pl.swearList.getList().get("nomultiplier").parallelStream().filter(testTemp::contains).collect(Collectors.toList());
+                                    //Java 8 Streams (very very fast)           [-this is the important bit-] [-puts all +'ves into a list-]
+                                    List<String> badmul = mList.parallelStream().filter(testTemp::contains).collect(Collectors.toList());
+                                    List<String> badt = nomList.parallelStream().filter(testTemp::contains).collect(Collectors.toList());
                                     String bad1 = null;
                                     String bad2 = null;
                                     boolean multiple = false;
@@ -132,6 +147,7 @@ public class PlayerChatPacketListener implements Listener {
                                     pl.getLogger().severe("Error Editing Chat Packet. Please report this to GitLab");
                                     pl.getLogger().severe("Almost Raw " + aRMsg);
                                     pl.getLogger().severe("Colour Code " + cCMsg);
+                                    pl.getLogger().severe("Regexed " + msg);
                                     pl.getLogger().severe("Final " + chat);
                                 }
                             }

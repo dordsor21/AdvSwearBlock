@@ -78,8 +78,9 @@ public class Main extends JavaPlugin {
         pM = ProtocolLibrary.getProtocolManager();
 
         playerChatPacketListener = new PlayerChatPacketListener(this, pM);
-        if (signs)
+        if (signs) {
             playerSignPacketListener = new PlayerSignPacketListener(this, pM);
+        }
         chatListener = new ChatListener(this);
 
         if (persistence) {
@@ -91,7 +92,7 @@ public class Main extends JavaPlugin {
         swearList = new SwearList(this);
     }
 
-    private void loadConfigValues(){
+    private void loadConfigValues() {
         prefix = getConfig().getString("prefix");
         persistence = getConfig().getBoolean("persistence");
         ignoring = getConfig().getBoolean("ignoring.enabled");

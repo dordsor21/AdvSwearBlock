@@ -67,7 +67,8 @@ public class JoinLeaveListener implements Listener {
                 p.setMetadata("swearBlock", new FixedMetadataValue(plugin, true));
                 if (firstSwear)
                     p.setMetadata("firstSwear", new FixedMetadataValue(plugin, true));
-            }
+            } else
+                p.setMetadata("swearBlock", new FixedMetadataValue(plugin, false));
         });
     }
 
