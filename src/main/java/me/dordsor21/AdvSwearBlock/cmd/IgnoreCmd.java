@@ -49,6 +49,7 @@ public class IgnoreCmd implements CommandExecutor {
                                     StringBuilder failed = new StringBuilder();//list of people that were failed to be ignored
                                     StringBuilder completed = new StringBuilder();//list of people that were successfully ignored
                                     StringBuilder alreadyIgnored = new StringBuilder();//list of people that were already ignored
+                                    StringBuilder cannotIgnore = new StringBuilder();
                                     List<UUID> uuids = new ArrayList<>();//list of ignorees' uuids to ignore
                                     List<String> ignorees = new ArrayList<>();//list of player names to store in the cache to allow for quick detection of an ignored player
                                     if (ignore.isIgnorer(puuid))//check if the player is already ignore anyone, and getting that list
@@ -57,6 +58,10 @@ public class IgnoreCmd implements CommandExecutor {
                                         String pl = args[i];
                                         if (pl.equalsIgnoreCase(sender.getName()))//make sure they're not ignoring themselves
                                             continue;
+                                        if (plugin.ignore.cannotIgnore.contains(pl.toLowerCase())) {
+                                            cannotIgnore.append(pl).append(" ");
+                                            continue;
+                                        }
                                         if (ignorees.contains(pl.toLowerCase())) {//make sure the person to be ignored is not already ignored
                                             alreadyIgnored.append(pl).append(" ");
                                             continue;
@@ -71,13 +76,13 @@ public class IgnoreCmd implements CommandExecutor {
                                         ignorees.add(pl.toLowerCase());
                                     }
                                     plugin.sql.ignorePlayers(player.getUniqueId(), uuids);
-                                    player.sendMessage(plugin.messages.get("ignoredPlayersSuccess").replace("{{players}}", completed));
-                                    if (!failed.toString().equals("")) {
-                                        player.sendMessage(plugin.messages.get("ignoredPlayersFailure").replace("{{players}}", failed));
-                                    }
-                                    if (!alreadyIgnored.toString().equals("")) {
-                                        player.sendMessage(plugin.messages.get("ignoredPlayersAlready").replace("{{players}}", alreadyIgnored));
-                                    }
+                                    player.sendMessage(plugin.messages.get("ignorePlayersSuccess").replace("{{players}}", completed));
+                                    if (!failed.toString().equals(""))
+                                        player.sendMessage(plugin.messages.get("ignorePlayersFailure").replace("{{players}}", failed));
+                                    if (!cannotIgnore.toString().equals(""))
+                                        player.sendMessage(plugin.messages.get("cannotIgnorePlayers").replace("{{players}}", cannotIgnore));
+                                    if (!alreadyIgnored.toString().equals(""))
+                                        player.sendMessage(plugin.messages.get("ignorePlayersAlready").replace("{{players}}", alreadyIgnored));
                                     if (ignore.isIgnorer(puuid))
                                         ignore.editIgnorer(puuid, ignorees);
                                     else
@@ -88,19 +93,23 @@ public class IgnoreCmd implements CommandExecutor {
                                         player.sendMessage(plugin.messages.get("ignoreSelf"));
                                         return;
                                     }
+                                    if (plugin.ignore.cannotIgnore.contains(args[1].toLowerCase())) {
+                                        player.sendMessage(plugin.messages.get("cannotIgnorePlayer").replace("{{player}}", args[1]));
+                                        return;
+                                    }
                                     if (ignorees.contains(args[1].toLowerCase())) {
-                                        player.sendMessage(plugin.messages.get("ignoredPlayerAlready").replace("{{player}}", args[1]));
+                                        player.sendMessage(plugin.messages.get("ignorePlayerAlready").replace("{{player}}", args[1]));
                                         return;
                                     }
                                     UUID uuid = plugin.uuids.getUUIDFromName(args[1]);
                                     if (ignore.isIgnorer(puuid))
                                         ignorees = ignore.getIgnored(puuid);
                                     if (uuid == null) {
-                                        player.sendMessage(plugin.messages.get("ignoredPlayerFailure").replace("{{player}}", args[1]));
+                                        player.sendMessage(plugin.messages.get("ignorePlayerFailure").replace("{{player}}", args[1]));
                                         return;
                                     }
                                     plugin.sql.ignorePlayer(player.getUniqueId(), uuid);
-                                    player.sendMessage(plugin.messages.get("ignoredPlayerSuccess").replace("{{player}}", args[1]));
+                                    player.sendMessage(plugin.messages.get("ignorePlayerSuccess").replace("{{player}}", args[1]));
                                     ignorees.add(args[1].toLowerCase());
                                     if (ignore.isIgnorer(puuid))
                                         ignore.editIgnorer(puuid, ignorees);
@@ -146,24 +155,24 @@ public class IgnoreCmd implements CommandExecutor {
                                         ignorees.remove(pl.toLowerCase());
                                     }
                                     plugin.sql.unIgnorePlayers(player.getUniqueId(), uuids);
-                                    player.sendMessage(plugin.messages.get("unignoredPlayersSuccess").replace("{{players}}", completed));
+                                    player.sendMessage(plugin.messages.get("unignorePlayersSuccess").replace("{{players}}", completed));
                                     if (!notIgnored.toString().equals(""))
-                                        player.sendMessage(plugin.messages.get("unignoredPlayersAlready").replace("{{players}}", notIgnored));
+                                        player.sendMessage(plugin.messages.get("unignorePlayersAlready").replace("{{players}}", notIgnored));
                                     if (!failed.toString().equals(""))
-                                        player.sendMessage(plugin.messages.get("unignoredPlayersFailed").replace("{{players}}", failed));
+                                        player.sendMessage(plugin.messages.get("unignorePlayersFailed").replace("{{players}}", failed));
                                     ignore.editIgnorer(puuid, ignorees);
                                 } else {
                                     if (!ignorees.contains(args[1])) {
-                                        player.sendMessage(plugin.messages.get("unignoredPlayerAlready").replace("{{player}}", args[1]));
+                                        player.sendMessage(plugin.messages.get("unignorePlayerAlready").replace("{{player}}", args[1]));
                                         return;
                                     }
                                     UUID uuid = plugin.uuids.getUUIDFromName(args[1]);
                                     if (uuid == null) {
-                                        player.sendMessage(plugin.messages.get("unignoredPlayerFailed").replace("{{player}}", args[1]));
+                                        player.sendMessage(plugin.messages.get("unignorePlayerFailed").replace("{{player}}", args[1]));
                                         return;
                                     }
                                     plugin.sql.unIgnorePlayer(player.getUniqueId(), uuid);
-                                    player.sendMessage(plugin.messages.get("unignoredPlayerSuccess").replace("{{player}}", args[1]));
+                                    player.sendMessage(plugin.messages.get("unignorePlayerSuccess").replace("{{player}}", args[1]));
                                     ignorees.remove(args[1].toLowerCase());
                                     ignore.editIgnorer(puuid, ignorees);
                                 }

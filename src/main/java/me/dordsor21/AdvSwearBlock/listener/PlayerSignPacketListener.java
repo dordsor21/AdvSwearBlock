@@ -94,9 +94,9 @@ public class PlayerSignPacketListener implements Listener {
                                                 if (pl.ignoreSwear.contains(testTemp))
                                                     continue;
 
-                                                //Java 8 Streams (very very fast)                          [-this is the important bit-] [-puts all +'ves into a list-]
-                                                List<String> badmul = pl.swearList.getList().get("multiplier").parallelStream().filter(testTemp::contains).collect(Collectors.toList());
-                                                List<String> badt = pl.swearList.getList().get("nomultiplier").parallelStream().filter(testTemp::contains).collect(Collectors.toList());
+                                                //Java 8 Streams (very very fast)          [-this is the important bit-] [-puts all +'ves into a list-]
+                                                List<String> badmul = mList.parallelStream().filter(testTemp::contains).collect(Collectors.toList());
+                                                List<String> badt = nomList.parallelStream().filter(testTemp::contains).collect(Collectors.toList());
                                                 String bad1 = null;
                                                 String bad2 = null;
                                                 boolean multiple = false;

@@ -10,6 +10,7 @@ import me.dordsor21.AdvSwearBlock.Main;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 
@@ -75,6 +76,19 @@ public class MainCmd implements CommandExecutor {
                     break;
                 }
                 sender.sendMessage(plugin.messages.get("asbListUsage"));
+                break;
+            case "refresh":
+                for (Player p : plugin.getServer().getOnlinePlayers()) {
+                    if (p.hasPermission("asb.noignore") && !plugin.ignore.cannotIgnore.contains(p.getName().toLowerCase())) {
+                        plugin.ignore.cannotIgnore.add(p.getName().toLowerCase());
+                        plugin.sql.setCannotIgnore(p.getUniqueId(), true);
+                        continue;
+                    }
+                    if (!p.hasPermission("asb.noignore") && plugin.ignore.cannotIgnore.contains(p.getName().toLowerCase())) {
+                        plugin.ignore.cannotIgnore.remove(p.getName().toLowerCase());
+                        plugin.sql.setCannotIgnore(p.getUniqueId(), false);
+                    }
+                }
                 break;
             default:
                 sender.sendMessage(plugin.messages.get("asbReloadUsage"));

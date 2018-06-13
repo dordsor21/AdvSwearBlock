@@ -6,6 +6,8 @@
 
 package me.dordsor21.AdvSwearBlock.util;
 
+import me.dordsor21.AdvSwearBlock.Main;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -13,9 +15,11 @@ import java.util.UUID;
 public class Ignore {
 
     private HashMap<UUID, List<String>> ignoreCache;
+    public List<String> cannotIgnore;
 
-    public Ignore() {
+    public Ignore(Main plugin) {
         ignoreCache = new HashMap<>();
+        cannotIgnore = plugin.sql.noIgnoreList();
     }
 
     public boolean addIgnorer(UUID uuid, List<String> ignorees) {

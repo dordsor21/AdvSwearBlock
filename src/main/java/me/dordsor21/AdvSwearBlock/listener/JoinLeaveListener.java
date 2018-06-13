@@ -45,22 +45,36 @@ public class JoinLeaveListener implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             Player p = e.getPlayer();
             UUID uuid = p.getUniqueId();
-            if (plugin.ignoring && plugin.sql.isIgnoreree(uuid) && plugin.sql.isIgnoring(uuid)) {//loads any ignored players into cache.
-                String[] ignorees = plugin.sql.getIgnorees(uuid).split(",");
-                try {
-                    List<String> toIgnore = new ArrayList<>();
-                    for (String ignoree : ignorees) {
-                        if (ignoree == null || ignoree.equals("") || ignoree.isEmpty())
-                            continue;
-                        String name = plugin.sql.getNamefromID(ignoree);
-                        try {
-                            toIgnore.add(name);
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
+            if (plugin.ignoring) {
+                if (plugin.sql.isIgnoreree(uuid) && plugin.sql.isIgnoring(uuid)) {//loads any ignored players into cache.
+                    String[] ignorees = plugin.sql.getIgnorees(uuid).split(",");
+                    try {
+                        List<String> toIgnore = new ArrayList<>();
+                        for (String ignoree : ignorees) {
+                            if (ignoree == null || ignoree.equals("") || ignoree.isEmpty())
+                                continue;
+                            String name = plugin.sql.getNamefromID(ignoree);
+                            if (plugin.ignore.cannotIgnore.contains(name.toLowerCase())) {
+                                plugin.sql.unIgnorePlayer(uuid, plugin.uuids.getUUIDFromName(name));
+                                continue;
+                            }
+                            try {
+                                toIgnore.add(name);
+                            } catch (Exception e1) {
+                                e1.printStackTrace();
+                            }
                         }
+                        plugin.ignore.addIgnorer(uuid, toIgnore);
+                    } catch (StringIndexOutOfBoundsException ignored) {
                     }
-                    plugin.ignore.addIgnorer(uuid, toIgnore);
-                } catch (StringIndexOutOfBoundsException ignored) {
+                }
+                if (p.hasPermission("asb.noignore") && !plugin.ignore.cannotIgnore.contains(p.getName().toLowerCase())) {
+                    plugin.ignore.cannotIgnore.add(p.getName().toLowerCase());
+                    plugin.sql.setCannotIgnore(p.getUniqueId(), true);
+                }
+                if (!p.hasPermission("asb.noignore") && plugin.ignore.cannotIgnore.contains(p.getName().toLowerCase())) {
+                    plugin.ignore.cannotIgnore.remove(p.getName().toLowerCase());
+                    plugin.sql.setCannotIgnore(p.getUniqueId(), false);
                 }
             }
             if ((plugin.persistence && plugin.sql.swearBlock(p.getUniqueId())) || plugin.getConfig().getBoolean("swearing.defaultStatus")) {//turns swearblock on (persistant cross-network n stuff)

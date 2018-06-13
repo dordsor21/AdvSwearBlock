@@ -28,6 +28,7 @@ public class SQL {
         columns.put("name", "VARCHAR(16)NOTNULL");
         columns.put("ignoreNo", "INT(11)!DEFAULT=0!");
         columns.put("ignorees", "VARCHAR(255)");
+        columns.put("canBeIgnored", "BOOLEAN!DEFAULT=FALSE!");
     }
 
     private Connection conn;
@@ -62,7 +63,7 @@ public class SQL {
     private void tableExists() {
         try {
             PreparedStatement stm = conn.prepareStatement("CREATE TABLE IF NOT EXISTS " + tableName + " (id INT(11) NOT NULL PRIMARY KEYAUTO_INCREMENT, uuid VARCHAR(32) NOT NULL, name VARCHAR(16) NOT NULL," +
-                    " ignoreNo INT(11) DEFAULT 0, ignorees VARCHAR(255), isBlocking BOOLEAN DEFAULT ?)");
+                    " ignoreNo INT(11) DEFAULT 0, ignorees VARCHAR(255), isBlocking BOOLEAN DEFAULT ?, canBeIgnored BOOLEAN DEFAULT FALSE)");
             stm.setBoolean(1, plugin.getConfig().getBoolean("defaultStatus"));
             stm.executeUpdate();
         } catch (SQLException e) {
@@ -397,9 +398,37 @@ public class SQL {
         }
     }
 
+    public List<String> noIgnoreList() {
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT name FROM " + tableName + " WHERE canBeIgnored = 0");
+            ResultSet res = stmt.executeQuery();
+            List<String> ret = new ArrayList<>();
+            while (res.next())
+                ret.add(res.getString("name").toLowerCase());
+            stmt.close();
+            res.close();
+            return ret;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void setCannotIgnore(UUID uuid, boolean bool) {
+        try {
+            PreparedStatement stmt = conn.prepareStatement("UPDATE " + tableName + " SET canBeIgnored=? WHERE uuid=?");
+            stmt.setBoolean(1, bool);
+            stmt.setString(2, plugin.uuids.niceUUID(uuid));
+            stmt.executeUpdate();
+            stmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public boolean swearBlock(UUID uuid) {
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT isBlocking FROM " + tableName + " WHERE uuid=?;");
+            PreparedStatement stmt = conn.prepareStatement("SELECT isBlocking FROM " + tableName + " WHERE uuid=?");
             stmt.setString(1, plugin.uuids.niceUUID(uuid));
             ResultSet res = stmt.executeQuery();
             if (!res.next())
@@ -413,7 +442,7 @@ public class SQL {
 
     public void setSwearBlock(UUID uuid, boolean sb) {
         try {
-            PreparedStatement stmt = conn.prepareStatement("UPDATE " + tableName + " SET isBlocking=? WHERE uuid=?;");
+            PreparedStatement stmt = conn.prepareStatement("UPDATE " + tableName + " SET isBlocking=? WHERE uuid=?");
             stmt.setBoolean(1, sb);
             stmt.setString(2, plugin.uuids.niceUUID(uuid));
             stmt.executeUpdate();

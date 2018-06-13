@@ -68,7 +68,7 @@ public class Main extends JavaPlugin {
         uuids = new UUIDs(this);
 
         if (ignoring) {
-            ignore = new Ignore();
+            ignore = new Ignore(this);
             getCommand("ignore").setExecutor(new IgnoreCmd(this, ignore));
         }
 

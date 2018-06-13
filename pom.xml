@@ -6,7 +6,7 @@
 
     <groupId>me.dordsor21</groupId>
     <artifactId>AdvSwearBlock</artifactId>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>jar</packaging>
 
     <build>
