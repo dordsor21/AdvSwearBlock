@@ -39,7 +39,9 @@ public class SQL {
         tableName = plugin.getConfig().getString("SQL.tablePrefix", "") + "advSwearBlock";
 
         columns.put("isBlocking", "BOOLEAN!DEFAULT=" + plugin.getConfig().getBoolean("defaultStatus", true) + "!");
+    }
 
+    public boolean initialise() {
         tableExists();
         checkColumns();
 
@@ -54,9 +56,11 @@ public class SQL {
 
         try {
             conn = source.getConnection();
+            return true;
         } catch (SQLException e) {
-            plugin.getLogger().severe("Error creating MySQL connection");
+            plugin.getLogger().severe("Error creating MySQL connection. Disabling persistence.");
             e.printStackTrace();
+            return false;
         }
     }
 

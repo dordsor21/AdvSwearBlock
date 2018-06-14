@@ -60,6 +60,11 @@ public class Main extends JavaPlugin {
         for (String message : getConfig().getConfigurationSection("messages").getValues(false).keySet())
             messages.put(message, ChatColor.translateAlternateColorCodes('&', prefix + getConfig().getString("messages." + message)));
 
+        if (persistence) {
+            sql = new SQL(this);
+            persistence = sql.initialise();
+        }
+
         if (ignoring && !persistence) {
             getLogger().severe(prefix + " You cannot have ignoring enabled without persistence (MySQL)! Turning ignoring off!");
             ignoring = false;
@@ -82,10 +87,6 @@ public class Main extends JavaPlugin {
             playerSignPacketListener = new PlayerSignPacketListener(this, pM);
         }
         chatListener = new ChatListener(this);
-
-        if (persistence) {
-            sql = new SQL(this);
-        }
 
         joinLeaveListener = new JoinLeaveListener(this);
 
