@@ -126,8 +126,10 @@ public class Main extends JavaPlugin {
 
     public void reloadIgnore() {
         reloadConfig();
+        sql.closeConnection();
         persistence = getConfig().getBoolean("persistence");
         ignoring = getConfig().getBoolean("ignoring.enabled");
+        ignoring = sql.initialise();
         if (ignoring && persistence) {
             ignore = new Ignore(this);
             getCommand("ignore").setExecutor(new IgnoreCmd(this, ignore));

@@ -63,6 +63,15 @@ public class SQL {
         }
     }
 
+    public void closeConnection() {
+        try {
+            if (!conn.isClosed())
+                conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void tableExists() {
         try {
             PreparedStatement stm = conn.prepareStatement("CREATE TABLE IF NOT EXISTS " + tableName + " (id INT(11) NOT NULL PRIMARY KEYAUTO_INCREMENT, uuid VARCHAR(32) NOT NULL, name VARCHAR(16) NOT NULL," +
