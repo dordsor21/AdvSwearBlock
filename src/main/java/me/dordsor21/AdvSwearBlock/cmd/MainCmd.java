@@ -102,6 +102,7 @@ public class MainCmd implements CommandExecutor {
             plugin.reloadSwearList();
             plugin.reloadNoSwearList();
             plugin.reloadMessages();
+            plugin.reloadIgnore();
             sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", "all"));
             return;
         }
@@ -119,16 +120,22 @@ public class MainCmd implements CommandExecutor {
                 plugin.reloadMessages();
                 sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", component));
                 break;
+            case"ignore":
+                plugin.reloadIgnore();
+                sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", component));
+                break;
             case "all":
                 plugin.reloadSwearList();
                 plugin.reloadNoSwearList();
                 plugin.reloadMessages();
+                plugin.reloadIgnore();
                 sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", component));
                 break;
             default:
                 plugin.reloadSwearList();
                 plugin.reloadNoSwearList();
                 plugin.reloadMessages();
+                plugin.reloadIgnore();
                 sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", "all"));
         }
     }

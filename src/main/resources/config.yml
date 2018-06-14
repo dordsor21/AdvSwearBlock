@@ -80,7 +80,7 @@ messages:
     unignoreUsage: "Usage &6/ig remove [player] <player2> <player3> ..."
     ignoreListUsage: "Usage &6/ig [add|remove|list] {[player] <player2> <player3> ...}"
     swearBlockUsage: "Usage &6/sb [on|off]"
-    asbReloadUsage: "Usage: &6/asb {reload [swearList, noSwearList, messages, all]}|refresh"
+    asbReloadUsage: "Usage: &6/asb {reload [swearList, noSwearList, messages, ignore, all]}|refresh"
     asbSwearUsage: "Usage: &6/asb [add|remove|list] [m|nom] {[word1] <word2> <word3> ...|<page number>} "
     asbAddUsage: "Usage: &6/asb add [m(ultiplier)|nom(ultiplier)]] {[word1] <word2> <word3> ...}"
     asbRemoveUsage: "Usage: &6/asb remove [m(ultiplier)|nom(ultiplier)] {[word1] <word2> <word3> ...}"

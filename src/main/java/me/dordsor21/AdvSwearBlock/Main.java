@@ -112,7 +112,9 @@ public class Main extends JavaPlugin {
         HandlerList.unregisterAll(playerSignPacketListener);
         HandlerList.unregisterAll(chatListener);
         HandlerList.unregisterAll(joinLeaveListener);
-        loadConfigValues();
+        ignoreSwear = getConfig().getStringList("swearing.not-blocked");
+        signs = getConfig().getBoolean("swearing.signs", true);
+        persistence = getConfig().getBoolean("persistence");
         playerChatPacketListener = new PlayerChatPacketListener(this, pM);
         if (signs)
             playerSignPacketListener = new PlayerSignPacketListener(this, pM);
@@ -121,9 +123,23 @@ public class Main extends JavaPlugin {
         swearList = new SwearList(this);
     }
 
+    public void reloadIgnore() {
+        reloadConfig();
+        persistence = getConfig().getBoolean("persistence");
+        ignoring = getConfig().getBoolean("ignoring.enabled");
+        if (ignoring && persistence) {
+            ignore = new Ignore(this);
+            getCommand("ignore").setExecutor(new IgnoreCmd(this, ignore));
+        } else {
+            getLogger().severe(prefix + " You cannot have ignoring enabled without persistence (MySQL)! Turning ignoring off!");
+            ignoring = false;
+        }
+    }
+
     public void reloadMessages() {
         reloadConfig();
         messages = new HashMap<>();
+        prefix = getConfig().getString("prefix");
         for (String message : getConfig().getConfigurationSection("messages").getValues(false).keySet())
             messages.put(message, ChatColor.translateAlternateColorCodes('&', prefix + getConfig().getString("messages." + message)));
     }
