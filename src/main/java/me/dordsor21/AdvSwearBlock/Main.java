@@ -131,7 +131,7 @@ public class Main extends JavaPlugin {
         if (ignoring && persistence) {
             ignore = new Ignore(this);
             getCommand("ignore").setExecutor(new IgnoreCmd(this, ignore));
-        } else {
+        } else if (ignoring) {
             getLogger().severe(prefix + " You cannot have ignoring enabled without persistence (MySQL)! Turning ignoring off!");
             ignoring = false;
         }
