@@ -42,9 +42,6 @@ public class SQL {
     }
 
     public boolean initialise() {
-        tableExists();
-        checkColumns();
-
         MysqlDataSource source = new MysqlDataSource();
         source.setServerName(plugin.getConfig().getString("SQL.hostname"));
         source.setDatabaseName(plugin.getConfig().getString("SQL.database"));
@@ -56,6 +53,8 @@ public class SQL {
 
         try {
             conn = source.getConnection();
+            tableExists();
+            checkColumns();
             return true;
         } catch (SQLException e) {
             plugin.getLogger().severe("Error creating MySQL connection. Disabling persistence.");
