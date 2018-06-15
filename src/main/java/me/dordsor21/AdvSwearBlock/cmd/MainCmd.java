@@ -97,46 +97,53 @@ public class MainCmd implements CommandExecutor {
         return true;
     }
 
-    private void reload(CommandSender sender, String[] args) {
-        if (args.length == 1) {
-            plugin.reloadSwearList();
-            plugin.reloadNoSwearList();
-            plugin.reloadMessages();
-            plugin.reloadIgnore();
-            sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", "all"));
-            return;
-        }
-        String component = args[1];
-        switch (component.toLowerCase()) {
-            case "swearlist":
-                plugin.reloadSwearList();
-                sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", component));
-                break;
-            case "noswearlist":
-                plugin.reloadNoSwearList();
-                sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", component));
-                break;
-            case "messages":
-                plugin.reloadMessages();
-                sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", component));
-                break;
-            case"ignore":
-                plugin.reloadIgnore();
-                sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", component));
-                break;
-            case "all":
-                plugin.reloadSwearList();
-                plugin.reloadNoSwearList();
-                plugin.reloadMessages();
-                plugin.reloadIgnore();
-                sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", component));
-                break;
-            default:
+    private void reload(final CommandSender sender, String[] args) {
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+            if (args.length == 1) {
+                plugin.reloadPersistance();
                 plugin.reloadSwearList();
                 plugin.reloadNoSwearList();
                 plugin.reloadMessages();
                 plugin.reloadIgnore();
                 sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", "all"));
-        }
+                return;
+            }
+            String component = args[1];
+            switch (component.toLowerCase()) {
+                case "swearlist":
+                    plugin.reloadPersistance();
+                    plugin.reloadSwearList();
+                    sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", component));
+                    break;
+                case "noswearlist":
+                    plugin.reloadNoSwearList();
+                    sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", component));
+                    break;
+                case "messages":
+                    plugin.reloadMessages();
+                    sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", component));
+                    break;
+                case "ignore":
+                    plugin.reloadPersistance();
+                    plugin.reloadIgnore();
+                    sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", component));
+                    break;
+                case "all":
+                    plugin.reloadPersistance();
+                    plugin.reloadSwearList();
+                    plugin.reloadNoSwearList();
+                    plugin.reloadMessages();
+                    plugin.reloadIgnore();
+                    sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", component));
+                    break;
+                default:
+                    plugin.reloadPersistance();
+                    plugin.reloadSwearList();
+                    plugin.reloadNoSwearList();
+                    plugin.reloadMessages();
+                    plugin.reloadIgnore();
+                    sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", "all"));
+            }
+        });
     }
 }

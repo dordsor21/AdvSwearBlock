@@ -21,6 +21,8 @@ public class SQL {
 
     private String tableName;
 
+    private boolean initialised;
+
     static {
         columns = new HashMap<>();
         columns.put("id", "INT(11)AUTO_INCREMENT|PRIMARY|NOTNULL");
@@ -42,20 +44,22 @@ public class SQL {
     }
 
     public boolean initialise() {
-        MysqlDataSource source = new MysqlDataSource();
-        source.setServerName(plugin.getConfig().getString("SQL.hostname"));
-        source.setDatabaseName(plugin.getConfig().getString("SQL.database"));
-        source.setUser(plugin.getConfig().getString("SQL.username"));
-        source.setPassword(plugin.getConfig().getString("SQL.password"));
-        source.setPort(plugin.getConfig().getInt("SQL.port"));
-        source.setAutoReconnect(plugin.getConfig().getBoolean("SQL.autoreconnect", true));
-        source.setUseSSL(plugin.getConfig().getBoolean("SQL.useSSL", false));
-
         try {
+            MysqlDataSource source = new MysqlDataSource();
+            source.setServerName(plugin.getConfig().getString("SQL.hostname"));
+            source.setDatabaseName(plugin.getConfig().getString("SQL.database"));
+            source.setUser(plugin.getConfig().getString("SQL.username"));
+            source.setPassword(plugin.getConfig().getString("SQL.password"));
+            source.setPort(plugin.getConfig().getInt("SQL.port"));
+            source.setAutoReconnect(plugin.getConfig().getBoolean("SQL.autoreconnect", true));
+            source.setUseSSL(plugin.getConfig().getBoolean("SQL.useSSL", false));
+            source.setLoginTimeout(2);
+            source.setMaxReconnects(1);
             conn = source.getConnection();
+            initialised = true;
             tableExists();
             checkColumns();
-            return true;
+            return initialised;
         } catch (SQLException e) {
             plugin.getLogger().severe("Error creating MySQL connection. Disabling persistence.");
             e.printStackTrace();
