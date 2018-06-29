@@ -37,6 +37,7 @@ public class SwearList {
 
         badWords.put("multiplier", swearFile.getStringList("multiplier"));
         badWords.put("nomultiplier", swearFile.getStringList("nomultiplier"));
+        badWords.put("onlymatch", swearFile.getStringList("onlymatch"));
 
     }
 
@@ -67,6 +68,8 @@ public class SwearList {
             String multiplier = "nomultiplier";
             if (m.equalsIgnoreCase("m") || m.equalsIgnoreCase("multiplier"))
                 multiplier = "multiplier";
+            else if(m.equalsIgnoreCase("o") || m.equalsIgnoreCase("onlymatch"))
+                multiplier = "onlymatch";
             StringBuilder successes = new StringBuilder();
             StringBuilder failures = new StringBuilder();
             List<String> words = badWords.get(multiplier);
@@ -97,6 +100,8 @@ public class SwearList {
             String multiplier = "nomultiplier";
             if (m.equalsIgnoreCase("m") || m.equalsIgnoreCase("multiplier"))
                 multiplier = "multiplier";
+            else if(m.equalsIgnoreCase("o") || m.equalsIgnoreCase("onlymatch"))
+                multiplier = "onlymatch";
             StringBuilder successes = new StringBuilder();
             StringBuilder failures = new StringBuilder();
             List<String> words = badWords.get(multiplier);
@@ -121,8 +126,12 @@ public class SwearList {
         }
     }
 
-    public void list(CommandSender sender, int page, String multiplier) {
-        multiplier = multiplier.equalsIgnoreCase("m") || multiplier.equalsIgnoreCase("multiplier") ? "multiplier" : "nomultiplier";
+    public void list(CommandSender sender, int page, String m) {
+        String multiplier = "nomultiplier";
+        if (m.equalsIgnoreCase("m") || m.equalsIgnoreCase("multiplier"))
+            multiplier = "multiplier";
+        else if(m.equalsIgnoreCase("o") || m.equalsIgnoreCase("onlymatch"))
+            multiplier = "onlymatch";
         if (!(sender instanceof Player)) {
             sender.sendMessage(badWords.toString());
             return;

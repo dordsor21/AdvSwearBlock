@@ -40,7 +40,7 @@ public class MainCmd implements CommandExecutor {
                 break;
             case "add":
                 if (args.length > 2) {
-                    if (!Arrays.asList(new String[]{"m", "nom", "multiplier", "nomultiplier"}).contains(args[1].toLowerCase())) {
+                    if (!Arrays.asList(new String[]{"m", "nom", "o", "multiplier", "nomultiplier", "onlymatch"}).contains(args[1].toLowerCase())) {
                         sender.sendMessage(plugin.messages.get("asbListUsage"));
                         break;
                     }
@@ -61,7 +61,7 @@ public class MainCmd implements CommandExecutor {
                 break;
             case "list":
                 if (args.length > 1) {
-                    if (!Arrays.asList(new String[]{"m", "nom", "multiplier", "nomultiplier"}).contains(args[1].toLowerCase())) {
+                    if (!Arrays.asList(new String[]{"m", "nom", "o", "multiplier", "nomultiplier", "onlymatch"}).contains(args[1].toLowerCase())) {
                         sender.sendMessage(plugin.messages.get("asbListUsage"));
                         break;
                     }

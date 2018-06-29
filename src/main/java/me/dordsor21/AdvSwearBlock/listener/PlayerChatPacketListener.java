@@ -56,17 +56,21 @@ public class PlayerChatPacketListener implements Listener {
                             }
                             List<String> mList = pl.swearList.getList().get("multiplier");
                             List<String> nomList = pl.swearList.getList().get("nomultiplier");
-                            List<String> both = new ArrayList<>();
-                            both.addAll(mList);
-                            both.addAll(nomList);
-                            for (String word : both) {
+                            List<String> oList = pl.swearList.getList().get("onlymatch");
+                            List<String> all = new ArrayList<>();
+                            all.addAll(mList);
+                            all.addAll(nomList);
+                            for (String word : all) {
                                 StringBuilder regex = new StringBuilder("((?<=&[a-fk-o\\d])|(^|(?<=\\s)))(").append(word.charAt(0)).append("((&[a-fk-o\\d]))|").append(word.charAt(0)).append(")+");
                                 for (int i = 1; i < word.length(); i++)
                                     regex.append("\\s*((").append(word.charAt(i)).append("|&[a-fk-o\\d]))+");
                                 Matcher matcher = Pattern.compile(regex.toString()).matcher(msg);
                                 while (matcher.find() && matcher.group().length() > word.length()) {
-                                    msg = msg.replace(matcher.group(), new String(new char[matcher.group().replace(" ", "").length()]).replace('\0', '*'));
-                                    actuallyEdited = true;
+                                    int length = matcher.group().length();
+                                    if (pl.ignoreSwear.parallelStream().anyMatch(Arrays.asList(matcher.group().toLowerCase().split(" "))::contains)) {
+                                        msg = msg.replace(matcher.group(), new String(new char[length]).replace('\0', '*'));
+                                        actuallyEdited = true;
+                                    }
                                 }
                             }
                             String[] words = msg.split(" ");
@@ -82,19 +86,23 @@ public class PlayerChatPacketListener implements Listener {
                                     //Java 8 Streams (very very fast)           [-this is the important bit-] [-puts all +'ves into a list-]
                                     List<String> badmul = mList.parallelStream().filter(testTemp::contains).collect(Collectors.toList());
                                     List<String> badt = nomList.parallelStream().filter(testTemp::contains).collect(Collectors.toList());
+                                    List<String> bado = oList.parallelStream().filter(testTemp::equalsIgnoreCase).collect(Collectors.toList());
                                     String bad1 = null;
                                     String bad2 = null;
+                                    String bad3 = null;
                                     boolean multiple = false;
-                                    if (!(badmul.size() > 1 || badt.size() > 1
+                                    if (!(badmul.size() > 1 || badt.size() > 1 || bado.size() > 1
                                             || (badmul.size() > 0 && StringUtils.countMatches(testTemp, badmul.get(0)) > 1)
-                                            || (badt.size() > 0 && StringUtils.countMatches(testTemp, badt.get(0)) > 1))) {
+                                            || (badt.size() > 0 && StringUtils.countMatches(testTemp, badt.get(0)) > 1))
+                                            || (bado.size() > 0 && StringUtils.countMatches(testTemp, bado.get(0)) > 1)) {
                                         bad1 = badmul.size() > 0 ? badmul.get(0) : null;
                                         bad2 = badt.size() > 0 ? badt.get(0) : null;
+                                        bad3 = bado.size() > 0 ? bado.get(0) : null;
                                     } else {
                                         multiple = true;
                                     }
                                     if (multiple || (bad1 != null && !bad1.equals("") && !bad1.isEmpty() && (testTemp.length() <= multiplier * bad1.length()))
-                                            || (bad2 != null && testTemp.length() <= bad2.length() + incr)) {
+                                            || (bad2 != null && testTemp.length() <= bad2.length() + incr) || bad3 != null) {
                                         c.append(w.replaceAll("(((?<!&)[a-fk-o\\d])|[g-jp-zA-Z_])", "*")).append(" ");
                                         actuallyEdited = true;
                                         continue;
