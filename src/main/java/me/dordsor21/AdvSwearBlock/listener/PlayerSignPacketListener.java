@@ -21,10 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.metadata.MetadataValue;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -69,6 +66,7 @@ public class PlayerSignPacketListener implements Listener {
                                     String text = Json.jsonToColourCode(json.replace("&", "§§"), "&0");
                                     List<String> mList = pl.swearList.getList().get("multiplier");
                                     List<String> nomList = pl.swearList.getList().get("nomultiplier");
+                                    List<String> oList = pl.swearList.getList().get("onlymatch");
                                     List<String> both = new ArrayList<>();
                                     both.addAll(mList);
                                     both.addAll(nomList);
@@ -79,8 +77,11 @@ public class PlayerSignPacketListener implements Listener {
                                             regex.append("\\s*((").append(word.charAt(i)).append("|&[a-fk-o\\d]))+");
                                         Matcher matcher = Pattern.compile(regex.toString()).matcher(regexedMsg);
                                         while (matcher.find() && matcher.group().length() > word.length()) {
-                                            regexedMsg = regexedMsg.replace(matcher.group(), new String(new char[matcher.group().replace(" ", "").length()]).replace('\0', '*'));
-                                            actuallyEdited = true;
+                                            int length = matcher.group().length();
+                                            if (pl.ignoreSwear.parallelStream().anyMatch(Arrays.asList(matcher.group().toLowerCase().split(" "))::contains)) {
+                                                regexedMsg = regexedMsg.replace(matcher.group(), new String(new char[length]).replace('\0', '*'));
+                                                actuallyEdited = true;
+                                            }
                                         }
                                     }
                                     String[] words = regexedMsg.split(" ");
@@ -97,20 +98,23 @@ public class PlayerSignPacketListener implements Listener {
                                                 //Java 8 Streams (very very fast)          [-this is the important bit-] [-puts all +'ves into a list-]
                                                 List<String> badmul = mList.parallelStream().filter(testTemp::contains).collect(Collectors.toList());
                                                 List<String> badt = nomList.parallelStream().filter(testTemp::contains).collect(Collectors.toList());
+                                                List<String> bado = oList.parallelStream().filter(testTemp::equalsIgnoreCase).collect(Collectors.toList());
                                                 String bad1 = null;
                                                 String bad2 = null;
+                                                String bad3 = null;
                                                 boolean multiple = false;
-                                                if (!(badmul.size() > 1 || badt.size() > 1
+                                                if (!(badmul.size() > 1 || badt.size() > 1 || bado.size() > 1
                                                         || (badmul.size() > 0 && StringUtils.countMatches(testTemp, badmul.get(0)) > 1)
-                                                        || (badt.size() > 0 && StringUtils.countMatches(testTemp, badt.get(0)) > 1))) {
+                                                        || (badt.size() > 0 && StringUtils.countMatches(testTemp, badt.get(0)) > 1))
+                                                        || (bado.size() > 0 && StringUtils.countMatches(testTemp, bado.get(0)) > 1)) {
                                                     bad1 = badmul.size() > 0 ? badmul.get(0) : null;
                                                     bad2 = badt.size() > 0 ? badt.get(0) : null;
+                                                    bad3 = bado.size() > 0 ? bado.get(0) : null;
                                                 } else {
                                                     multiple = true;
                                                 }
                                                 if (multiple || (bad1 != null && !bad1.equals("") && !bad1.isEmpty() && (testTemp.length() <= multiplier * bad1.length()))
-                                                        || (bad2 != null && testTemp.length() <= bad2.length() + incr)) {
-                                                    c.append(w.replaceAll("(((?<!&)[a-fk-o\\d])|[g-jp-zA-Z_])", "*")).append(" ");
+                                                        || (bad2 != null && testTemp.length() <= bad2.length() + incr) || bad3 != null) {
                                                     actuallyEdited = true;
                                                     continue;
                                                 }
@@ -120,16 +124,16 @@ public class PlayerSignPacketListener implements Listener {
                                         c.append(w).append(" ");
                                     }
                                     String s2 = c.toString();
-                                    String s3;
+                                    String s3 = c.toString();
                                     String s4;
                                     if (actuallyEdited) {//only actually resend/etc the packet if we've edited it.
-                                        if (c.toString().endsWith(","))
-                                            c.substring(0, c.length() - 1);
-                                        if (c.toString().endsWith(" "))
-                                            c.substring(0, c.length() - 1);
-                                        String message = Json.colourCodeToJson(c + "\"}]");
+                                        if (s3.endsWith(","))
+                                            s3 = s3.substring(0, s3.length() - 1);
+                                        if (s3.endsWith(" "))
+                                            s3 = s3.substring(0, s3.length() - 1);
+                                        String message = Json.colourCodeToJson(s3 + "\"}]", "&");
                                         if (message.startsWith("\"},"))
-                                            message = message.substring(3);
+                                            message = message.substring(3, message.length());
 
                                         String sign = message.replace("§", "&").substring(0, message.length() - 1);
 
@@ -187,6 +191,7 @@ public class PlayerSignPacketListener implements Listener {
                                 String text = Json.jsonToColourCode(json.replace("&", "§§"), "&0");
                                 List<String> mList = pl.swearList.getList().get("multiplier");
                                 List<String> nomList = pl.swearList.getList().get("nomultiplier");
+                                List<String> oList = pl.swearList.getList().get("onlymatch");
                                 List<String> both = new ArrayList<>();
                                 both.addAll(mList);
                                 both.addAll(nomList);
@@ -197,8 +202,11 @@ public class PlayerSignPacketListener implements Listener {
                                         regex.append("\\s*((").append(word.charAt(i)).append("|&[a-fk-o\\d]))+");
                                     Matcher matcher = Pattern.compile(regex.toString()).matcher(regexedMsg);
                                     while (matcher.find() && matcher.group().length() > word.length()) {
-                                        regexedMsg = regexedMsg.replace(matcher.group(), new String(new char[matcher.group().replace(" ", "").length()]).replace('\0', '*'));
-                                        actuallyEdited = true;
+                                        int length = matcher.group().length();
+                                        if (pl.ignoreSwear.parallelStream().anyMatch(Arrays.asList(matcher.group().toLowerCase().split(" "))::contains)) {
+                                            regexedMsg = regexedMsg.replace(matcher.group(), new String(new char[length]).replace('\0', '*'));
+                                            actuallyEdited = true;
+                                        }
                                     }
                                 }
                                 String[] words = regexedMsg.split(" ");
@@ -215,19 +223,23 @@ public class PlayerSignPacketListener implements Listener {
                                             //Java 8 Streams (very very fast)                          [-this is the important bit-] [-puts all +'ves into a list-]
                                             List<String> badmul = pl.swearList.getList().get("multiplier").parallelStream().filter(testTemp::contains).collect(Collectors.toList());
                                             List<String> badt = pl.swearList.getList().get("nomultiplier").parallelStream().filter(testTemp::contains).collect(Collectors.toList());
+                                            List<String> bado = oList.parallelStream().filter(testTemp::equalsIgnoreCase).collect(Collectors.toList());
                                             String bad1 = null;
                                             String bad2 = null;
+                                            String bad3 = null;
                                             boolean multiple = false;
-                                            if (!(badmul.size() > 1 || badt.size() > 1
+                                            if (!(badmul.size() > 1 || badt.size() > 1 || bado.size() > 1
                                                     || (badmul.size() > 0 && StringUtils.countMatches(testTemp, badmul.get(0)) > 1)
-                                                    || (badt.size() > 0 && StringUtils.countMatches(testTemp, badt.get(0)) > 1))) {
+                                                    || (badt.size() > 0 && StringUtils.countMatches(testTemp, badt.get(0)) > 1))
+                                                    || (bado.size() > 0 && StringUtils.countMatches(testTemp, bado.get(0)) > 1)) {
                                                 bad1 = badmul.size() > 0 ? badmul.get(0) : null;
                                                 bad2 = badt.size() > 0 ? badt.get(0) : null;
+                                                bad3 = bado.size() > 0 ? bado.get(0) : null;
                                             } else {
                                                 multiple = true;
                                             }
                                             if (multiple || (bad1 != null && !bad1.equals("") && !bad1.isEmpty() && (testTemp.length() <= multiplier * bad1.length()))
-                                                    || (bad2 != null && testTemp.length() <= bad2.length() + incr)) {
+                                                    || (bad2 != null && testTemp.length() <= bad2.length() + incr) || bad3 != null) {
                                                 c.append(w.replaceAll("(((?<!&)[a-fk-o\\d])|[g-jp-zA-Z_])", "*")).append(" ");
                                                 actuallyEdited = true;
                                                 continue;
@@ -238,16 +250,16 @@ public class PlayerSignPacketListener implements Listener {
                                     c.append(w).append(" ");
                                 }
                                 String s2 = c.toString();
-                                String s3;
+                                String s3 = c.toString();
                                 String s4;
                                 if (actuallyEdited) {//only actually resend/etc the packet if we've edited it.
-                                    if (c.toString().endsWith(","))
-                                        c.substring(0, c.length() - 1);
-                                    if (c.toString().endsWith(" "))
-                                        c.substring(0, c.length() - 1);
-                                    String message = Json.colourCodeToJson(c + "\"}]");
+                                    if (s3.endsWith(","))
+                                        s3 = s3.substring(0, s3.length() - 1);
+                                    if (s3.endsWith(" "))
+                                        s3 = s3.substring(0, s3.length() - 1);
+                                    String message = Json.colourCodeToJson(s3 + "\"}]", "&");
                                     if (message.startsWith("\"},"))
-                                        message = message.substring(3);
+                                        message = message.substring(3, message.length());
 
                                     String sign = message.replace("§", "&").substring(0, message.length() - 1);
 

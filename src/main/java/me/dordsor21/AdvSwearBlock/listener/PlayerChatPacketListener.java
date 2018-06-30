@@ -122,11 +122,12 @@ public class PlayerChatPacketListener implements Listener {
                                 c.append(w).append(" ");
                             }
                             if (actuallyEdited) {//only actually resend/etc the chat packet if we've edited it.
-                                if (c.toString().endsWith(","))
-                                    c.substring(0, c.length() - 1);
-                                if (c.toString().endsWith(" "))
-                                    c.substring(0, c.length() - 1);
-                                String message = Json.colourCodeToJson(c + "\"}]");
+                                String s1 = c.toString();
+                                if (s1.endsWith(","))
+                                    s1 = s1.substring(0, c.length() - 1);
+                                if (s1.endsWith(" "))
+                                    s1 = s1.substring(0, c.length() - 1);
+                                String message = Json.colourCodeToJson(s1 + "\"}]", "&");
                                 if (message.startsWith("\"},"))
                                     message = message.substring(3);
 
@@ -155,6 +156,7 @@ public class PlayerChatPacketListener implements Listener {
                                     pl.getLogger().severe("Almost Raw " + aRMsg);
                                     pl.getLogger().severe("Colour Code " + cCMsg);
                                     pl.getLogger().severe("Regexed " + msg);
+                                    pl.getLogger().severe("s1 " + s1);
                                     pl.getLogger().severe("Final " + chat);
                                 }
                             }

@@ -38,29 +38,29 @@ public class Json {
                 .replace("&o", "");
     }
 
-    public static String colourCodeToJson(String msg) {
+    public static String colourCodeToJson(String msg, String i) {
         return msg
-                .replace("&0", "\"},~~,{\"color\":\"black\",\"text\":\"")
-                .replace("&1", "\"},~~,{\"color\":\"dark_blue\",\"text\":\"")
-                .replace("&2", "\"},~~,{\"color\":\"dark_green\",\"text\":\"")
-                .replace("&3", "\"},~~,{\"color\":\"dark_aqua\",\"text\":\"")
-                .replace("&4", "\"},~~,{\"color\":\"dark_red\",\"text\":\"")
-                .replace("&5", "\"},~~,{\"color\":\"dark_purple\",\"text\":\"")
-                .replace("&6", "\"},~~,{\"color\":\"gold\",\"text\":\"")
-                .replace("&7", "\"},~~,{\"color\":\"gray\",\"text\":\"")
-                .replace("&8", "\"},~~,{\"color\":\"dark_gray\",\"text\":\"")
-                .replace("&9", "\"},~~,{\"color\":\"blue\",\"text\":\"")
-                .replace("&a", "\"},~~,{\"color\":\"green\",\"text\":\"")
-                .replace("&b", "\"},~~,{\"color\":\"aqua\",\"text\":\"")
-                .replace("&c", "\"},~~,{\"color\":\"red\",\"text\":\"")
-                .replace("&d", "\"},~~,{\"color\":\"light_purple\",\"text\":\"")
-                .replace("&e", "\"},~~,{\"color\":\"yellow\",\"text\":\"")
-                .replace("&f", "\"},~~,{\"color\":\"white\",\"text\":\"")
-                .replace("&k", "\"},{\"obfuscated\":true,\"text\":\"")
-                .replace("&l", "\"},{\"bold\":true,\"text\":\"")
-                .replace("&m", "\"},{\"strikethrough\":true,\"text\":\"")
-                .replace("&n", "\"},{\"underlined\":true,\"text\":\"")
-                .replace("&o", "\"},{\"italic\":true,\"text\":\"")
+                .replace(i + "0", "\"},~~,{\"color\":\"black\",\"text\":\"")
+                .replace(i + "1", "\"},~~,{\"color\":\"dark_blue\",\"text\":\"")
+                .replace(i + "2", "\"},~~,{\"color\":\"dark_green\",\"text\":\"")
+                .replace(i + "3", "\"},~~,{\"color\":\"dark_aqua\",\"text\":\"")
+                .replace(i + "4", "\"},~~,{\"color\":\"dark_red\",\"text\":\"")
+                .replace(i + "5", "\"},~~,{\"color\":\"dark_purple\",\"text\":\"")
+                .replace(i + "6", "\"},~~,{\"color\":\"gold\",\"text\":\"")
+                .replace(i + "7", "\"},~~,{\"color\":\"gray\",\"text\":\"")
+                .replace(i + "8", "\"},~~,{\"color\":\"dark_gray\",\"text\":\"")
+                .replace(i + "9", "\"},~~,{\"color\":\"blue\",\"text\":\"")
+                .replace(i + "a", "\"},~~,{\"color\":\"green\",\"text\":\"")
+                .replace(i + "b", "\"},~~,{\"color\":\"aqua\",\"text\":\"")
+                .replace(i + "c", "\"},~~,{\"color\":\"red\",\"text\":\"")
+                .replace(i + "d", "\"},~~,{\"color\":\"light_purple\",\"text\":\"")
+                .replace(i + "e", "\"},~~,{\"color\":\"yellow\",\"text\":\"")
+                .replace(i + "f", "\"},~~,{\"color\":\"white\",\"text\":\"")
+                .replace(i + "k", "\"},{\"obfuscated\":true,\"text\":\"")
+                .replace(i + "l", "\"},{\"bold\":true,\"text\":\"")
+                .replace(i + "m", "\"},{\"strikethrough\":true,\"text\":\"")
+                .replace(i + "n", "\"},{\"underlined\":true,\"text\":\"")
+                .replace(i + "o", "\"},{\"italic\":true,\"text\":\"")
                 .replace("\"text\":\"\"},~~,{", "")
                 .replace("\"text\":\"\"},{", "");
     }
@@ -176,6 +176,7 @@ public class Json {
                 .replace("[{\"text\":\"", reset)
                 .replace("{\"text\":\"", reset)
                 .replace("\"},", "")
-                .replace("\"}]", "");
+                .replace("\"}]", "")
+                .replace("\"}", "");
     }
 }
