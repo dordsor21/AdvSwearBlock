@@ -10,6 +10,7 @@ import me.dordsor21.AdvSwearBlock.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -40,7 +41,7 @@ public class JoinLeaveListener implements Listener {
             plugin.sql.setSwearBlock(pl.getUniqueId(), pl.hasMetadata("swearBlock"));
     }
 
-    @EventHandler()
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(final PlayerJoinEvent e) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             Player p = e.getPlayer();

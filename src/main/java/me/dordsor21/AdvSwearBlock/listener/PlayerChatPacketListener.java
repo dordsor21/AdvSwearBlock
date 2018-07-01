@@ -12,7 +12,6 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.ComponentConverter;
-import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import me.dordsor21.AdvSwearBlock.Main;
 import me.dordsor21.AdvSwearBlock.util.Json;
@@ -42,11 +41,14 @@ public class PlayerChatPacketListener implements Listener {
                     UUID puuid = p.getUniqueId();
                     if (p.hasMetadata("swearBlock") || (pl.ignoring && pl.ignore.isIgnorer(puuid))) {
                         boolean actuallyEdited = false;//false unless the chat packet has actually been edited. improves performance and reduces bugs
+                        boolean isWcc = true;
                         WrappedChatComponent wcc;
-                        if (e.getPacket().getChatTypes().read(0).equals((EnumWrappers.ChatType.CHAT)))
+                        if (e.getPacket().getChatComponents().read(0) == null) {
                             wcc = ComponentConverter.fromBaseComponent((BaseComponent[]) e.getPacket().getModifier().read(1));
-                        else
+                            isWcc = false;
+                        } else {
                             wcc = e.getPacket().getChatComponents().read(0);
+                        }
                         String raw = wcc.getJson();
                         String aRMsg = Json.fromReadJson(raw);//parse the packet to be nice and readable.
                         String msg = aRMsg;//debug purposes.
@@ -159,7 +161,10 @@ public class PlayerChatPacketListener implements Listener {
                                 }
                                 chat = chat.replace(",~~,", ",");
                                 try {
-                                    e.getPacket().getChatComponents().write(0, WrappedChatComponent.fromJson("[" + chat + ",{\"text\":\"\",\"color\":\"gold\"}]"));
+                                    if (isWcc)
+                                        e.getPacket().getChatComponents().write(0, WrappedChatComponent.fromJson("[" + chat + ",{\"text\":\"\",\"color\":\"gold\"}]"));
+                                    else
+                                        e.getPacket().getModifier().write(1, ComponentConverter.fromWrapper(WrappedChatComponent.fromJson("[" + chat + ",{\"text\":\"\",\"color\":\"gold\"}]")));
                                 } catch (Exception ex) {
                                     pl.getLogger().severe("Error Editing Chat Packet. Please report this to GitLab");
                                     pl.getLogger().severe("Almost Raw " + aRMsg);
