@@ -11,9 +11,12 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.ComponentConverter;
+import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import me.dordsor21.AdvSwearBlock.Main;
 import me.dordsor21.AdvSwearBlock.util.Json;
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -39,9 +42,15 @@ public class PlayerChatPacketListener implements Listener {
                     UUID puuid = p.getUniqueId();
                     if (p.hasMetadata("swearBlock") || (pl.ignoring && pl.ignore.isIgnorer(puuid))) {
                         boolean actuallyEdited = false;//false unless the chat packet has actually been edited. improves performance and reduces bugs
-                        String aRMsg = Json.fromReadJson(e.getPacket().getChatComponents().read(0).getJson());//parse the packet to be nice and readable.
+                        WrappedChatComponent wcc;
+                        if (e.getPacket().getChatTypes().read(0).equals((EnumWrappers.ChatType.CHAT)))
+                            wcc = ComponentConverter.fromBaseComponent((BaseComponent[]) e.getPacket().getModifier().read(1));
+                        else
+                            wcc = e.getPacket().getChatComponents().read(0);
+                        String raw = wcc.getJson();
+                        String aRMsg = Json.fromReadJson(raw);//parse the packet to be nice and readable.
                         String msg = aRMsg;//debug purposes.
-                        if (!(msg.contains(",{\"color\":\"gold\",\"text\":\"\"}]") || msg.contains("\"action\":\"run_command\",")
+                        if (!(msg.contains(",{\"color\":\"gold\",\"text\":\"\"}]") || msg.contains("\"action\":\"run_command\",") || msg.contains("\"action\":\"suggest_command\",")
                                 || msg.contains(",\"hoverEvent\":{\"action\":\"") || msg.equals("{\"text\":\"\"}"))) {//#circumstances in which we don't want to edit packets
                             String cCMsg = Json.jsonToColourCode(msg.replace("&", "§§"), "&f");//if a player puts &e in chat, it won't make it a colour when converting back to Json
                             msg = cCMsg;
