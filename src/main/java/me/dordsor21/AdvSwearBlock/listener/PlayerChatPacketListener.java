@@ -127,7 +127,6 @@ public class PlayerChatPacketListener implements Listener {
                                     if (!w.contains("http"))
                                         http = "http://";
                                     c.append("\"},~~,{\"clickEvent\":{\"action\":\"open_url\",\"value\":\"").append(http).append(Json.stripCodes(w)).append("\"},\"text\":\"").append(w).append("\"},~~,{\"text\":\" ");
-                                    actuallyEdited = true;
                                     continue;
                                 }
                                 c.append(w).append(" ");
