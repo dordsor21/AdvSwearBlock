@@ -1,6 +1,6 @@
 name: AdvSwearBlock
 main: me.dordsor21.AdvSwearBlock.Main
-version: 1.0.2
+version: 1.0.3
 author: dordsor21
 description: Advanced swear-blocking (toggleable per player). Optional ignoring, CAPS-blocking and s p a c e-blocking.
 depend: [ ProtocolLib ]
