@@ -12,13 +12,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
-public class IgnoreCmd implements CommandExecutor {
+public class IgnoreCmd implements CommandExecutor, TabCompleter {
 
     private Main plugin;
     private Ignore ignore;
@@ -206,6 +205,43 @@ public class IgnoreCmd implements CommandExecutor {
         } else
             sender.sendMessage(plugin.messages.get("Must be a player."));
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String strng, final String[] args) {
+        if (!(sender instanceof Player))
+            return null;
+        if (args.length == 1)
+            if (args[0].equals(""))
+                return Arrays.asList("add", "remove", "list");
+            else
+                for (String s : new String[]{"add", "remove", "list"})
+                    if (s.startsWith(args[0].toLowerCase()))
+                        return Collections.singletonList(s);
+        if (args.length == 2)
+            if (args[0].equalsIgnoreCase("add"))
+                if (args[1].equals("")) {
+                    List<String> ret = new ArrayList<>();
+                    plugin.getServer().getOnlinePlayers().forEach(p -> ret.add(p.getName()));
+                    return ret;
+                } else {
+                    List<String> ret = new ArrayList<>();
+                    for (Player p : plugin.getServer().getOnlinePlayers())
+                        if (p.getName().toLowerCase().startsWith(args[1].toLowerCase()))
+                            ret.add(p.getName());
+                    return ret;
+                }
+            else if (args[0].equalsIgnoreCase("remove"))
+                if (args[1].equals(""))
+                    return plugin.ignore.getIgnored(((Player) sender).getUniqueId());
+                else {
+                    List<String> ret = new ArrayList<>();
+                    for (String s : plugin.ignore.getIgnored(((Player) sender).getUniqueId()))
+                        if (s.toLowerCase().startsWith(args[1].toLowerCase()))
+                            ret.add(s);
+                    return ret;
+                }
+        return null;
     }
 
 }

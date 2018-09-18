@@ -100,19 +100,17 @@
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib-API</artifactId>
-            <version>4.3.0</version>
+            <version>4.4.0-20180824.144628-37</version>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.12.2-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
+            <version>1.13.1-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>craftbukkit</artifactId>
-            <version>1.12.2-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
+            <version>1.13.1-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>javax.json</groupId>

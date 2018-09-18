@@ -75,6 +75,7 @@ public class Main extends JavaPlugin {
         if (ignoring) {
             ignore = new Ignore(this);
             getCommand("ignore").setExecutor(new IgnoreCmd(this, ignore));
+            getCommand("ignore").setTabCompleter(new IgnoreCmd(this, ignore));
         }
 
         getCommand("swearblock").setExecutor(new SwearWordCmd(this));

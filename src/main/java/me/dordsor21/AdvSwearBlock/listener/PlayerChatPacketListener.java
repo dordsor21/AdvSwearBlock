@@ -78,7 +78,7 @@ public class PlayerChatPacketListener implements Listener {
                                 Matcher matcher = Pattern.compile(regex.toString()).matcher(msg);
                                 while (matcher.find() && matcher.group().length() > word.length()) {
                                     int length = matcher.group().length();
-                                    if (pl.ignoreSwear.parallelStream().anyMatch(Arrays.asList(matcher.group().toLowerCase().split(" "))::contains)) {
+                                    if (pl.ignoreSwear.stream().anyMatch(Arrays.asList(matcher.group().toLowerCase().split(" "))::contains)) {
                                         msg = msg.replace(matcher.group(), new String(new char[length]).replace('\0', '*'));
                                         actuallyEdited = true;
                                     }
@@ -93,11 +93,21 @@ public class PlayerChatPacketListener implements Listener {
 
                                     if (pl.ignoreSwear.contains(testTemp))
                                         continue;
-
-                                    //Java 8 Streams (very very fast)           [-this is the important bit-] [-puts all +'ves into a list-]
-                                    List<String> badmul = mList.parallelStream().filter(testTemp::contains).collect(Collectors.toList());
-                                    List<String> badt = nomList.parallelStream().filter(testTemp::contains).collect(Collectors.toList());
-                                    List<String> bado = oList.parallelStream().filter(testTemp::equalsIgnoreCase).collect(Collectors.toList());
+                                    List<String> badmul = new ArrayList<>();
+                                    List<String> badt = new ArrayList<>();
+                                    List<String> bado = new ArrayList<>();
+                                    mList.forEach(s -> {
+                                        if(testTemp.contains(s))
+                                            badmul.add(s);
+                                    });
+                                    nomList.forEach(s -> {
+                                        if(testTemp.contains(s))
+                                            badt.add(s);
+                                    });
+                                    oList.forEach(s -> {
+                                        if(testTemp.contains(s))
+                                            bado.add(s);
+                                    });
                                     String bad1 = null;
                                     String bad2 = null;
                                     String bad3 = null;
