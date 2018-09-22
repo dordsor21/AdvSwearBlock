@@ -107,7 +107,7 @@ public class PlayerSignPacketListener implements Listener {
                                                         badt.add(s);
                                                 });
                                                 oList.forEach(s -> {
-                                                    if(testTemp.contains(s))
+                                                    if(testTemp.equalsIgnoreCase(s))
                                                         bado.add(s);
                                                 });
                                                 String bad1 = null;

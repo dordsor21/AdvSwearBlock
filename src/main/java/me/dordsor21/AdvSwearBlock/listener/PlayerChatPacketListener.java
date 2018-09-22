@@ -59,7 +59,7 @@ public class PlayerChatPacketListener implements Listener {
                             String m = Json.stripCodes(msg);
                             if (pl.ignoring && pl.ignore.isIgnorer(puuid)) {//test if packet contains an ignored player's name (SUPER OP)
                                 for (String ignoree : pl.ignore.getIgnored(puuid)) {
-                                    if (m.toLowerCase().contains(ignoree.toLowerCase()) && Arrays.stream(kw).parallel().noneMatch(m.toLowerCase()::startsWith)) {
+                                    if (m.toLowerCase().contains(ignoree.toLowerCase()) && Arrays.stream(kw).noneMatch(m.toLowerCase()::startsWith)) {
                                         e.setCancelled(true);
                                         return;
                                     }
@@ -105,7 +105,7 @@ public class PlayerChatPacketListener implements Listener {
                                             badt.add(s);
                                     });
                                     oList.forEach(s -> {
-                                        if(testTemp.contains(s))
+                                        if(testTemp.equalsIgnoreCase(s))
                                             bado.add(s);
                                     });
                                     String bad1 = null;
