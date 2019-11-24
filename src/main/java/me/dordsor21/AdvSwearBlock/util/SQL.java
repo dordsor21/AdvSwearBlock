@@ -78,7 +78,7 @@ public class SQL {
 
     private void tableExists() {
         try {
-            PreparedStatement stm = conn.prepareStatement("CREATE TABLE IF NOT EXISTS " + tableName + " (id INT(11) NOT NULL PRIMARY KEYAUTO_INCREMENT, uuid VARCHAR(32) NOT NULL, name VARCHAR(16) NOT NULL," +
+            PreparedStatement stm = conn.prepareStatement("CREATE TABLE IF NOT EXISTS " + tableName + " (id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, uuid VARCHAR(32) NOT NULL, name VARCHAR(16) NOT NULL," +
                     " ignoreNo INT(11) DEFAULT 0, ignorees VARCHAR(255), isBlocking BOOLEAN DEFAULT ?, canBeIgnored BOOLEAN DEFAULT FALSE)");
             stm.setBoolean(1, plugin.getConfig().getBoolean("defaultStatus"));
             stm.executeUpdate();
