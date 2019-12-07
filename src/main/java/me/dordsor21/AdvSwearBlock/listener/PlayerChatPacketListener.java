@@ -24,9 +24,10 @@ import org.bukkit.event.Listener;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class PlayerChatPacketListener implements Listener {
+
+    private String[] styles = new String[]{"bold", "italics", "underline"};
 
     public PlayerChatPacketListener(Main pl, ProtocolManager pM) {
         String[] kw = pl.getConfig().getStringList("ignoring.noIgnoringPacketIfContains").toArray(new String[0]);//If the packet contains one of these strings, it cannot be ignored
@@ -152,12 +153,12 @@ public class PlayerChatPacketListener implements Listener {
                                     message = message.substring(3);
 
                                 String chat = message.replace("§", "&").substring(0, message.length() - 1);
+                                String chatt = chat;
 
                                 HashMap<String, Boolean> chatHasStyle = new HashMap<>();
-                                for (String style : new String[]{"bold", "italics", "underline"})
+                                for (String style : styles)
                                     chatHasStyle.put(style, chat.contains("\"" + style + "\":true"));
-
-                                String chatParts[] = chat.split(",~~,");
+                                String[] chatParts = chat.split(",~~,");
                                 int i = 0;
                                 for (String part : chatParts) {
                                     StringBuilder partBuilder = new StringBuilder(part.substring(0, part.length() - 1));
@@ -180,6 +181,7 @@ public class PlayerChatPacketListener implements Listener {
                                     pl.getLogger().severe("Colour Code " + cCMsg);
                                     pl.getLogger().severe("Regexed " + msg);
                                     pl.getLogger().severe("s1 " + s1);
+                                    pl.getLogger().severe("chatt " + chatt);
                                     pl.getLogger().severe("Final " + chat);
                                 }
                             }

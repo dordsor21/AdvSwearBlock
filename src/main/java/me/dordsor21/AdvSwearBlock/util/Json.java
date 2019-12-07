@@ -56,11 +56,11 @@ public class Json {
                 .replace(i + "d", "\"},~~,{\"color\":\"light_purple\",\"text\":\"")
                 .replace(i + "e", "\"},~~,{\"color\":\"yellow\",\"text\":\"")
                 .replace(i + "f", "\"},~~,{\"color\":\"white\",\"text\":\"")
-                .replace(i + "k", "\"},{\"obfuscated\":true,\"text\":\"")
-                .replace(i + "l", "\"},{\"bold\":true,\"text\":\"")
-                .replace(i + "m", "\"},{\"strikethrough\":true,\"text\":\"")
-                .replace(i + "n", "\"},{\"underlined\":true,\"text\":\"")
-                .replace(i + "o", "\"},{\"italic\":true,\"text\":\"")
+                .replace(i + "k", "\"},~~,{\"obfuscated\":true,\"text\":\"")
+                .replace(i + "l", "\"},~~,{\"bold\":true,\"text\":\"")
+                .replace(i + "m", "\"},~~,{\"strikethrough\":true,\"text\":\"")
+                .replace(i + "n", "\"},~~,{\"underlined\":true,\"text\":\"")
+                .replace(i + "o", "\"},~~,{\"italic\":true,\"text\":\"")
                 .replace("\"text\":\"\"},~~,{", "")
                 .replace("\"text\":\"\"},{", "");
     }

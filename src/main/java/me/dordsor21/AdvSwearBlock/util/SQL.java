@@ -58,7 +58,6 @@ public class SQL {
             conn = source.getConnection();
             initialised = true;
             tableExists();
-            //checkColumns();
             return initialised;
         } catch (SQLException e) {
             plugin.getLogger().severe("Error creating MySQL connection. Disabling persistence.");
