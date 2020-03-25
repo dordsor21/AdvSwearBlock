@@ -11,10 +11,7 @@ import com.comphenix.protocol.ProtocolManager;
 import me.dordsor21.AdvSwearBlock.cmd.IgnoreCmd;
 import me.dordsor21.AdvSwearBlock.cmd.MainCmd;
 import me.dordsor21.AdvSwearBlock.cmd.SwearWordCmd;
-import me.dordsor21.AdvSwearBlock.listener.ChatListener;
-import me.dordsor21.AdvSwearBlock.listener.JoinLeaveListener;
-import me.dordsor21.AdvSwearBlock.listener.PlayerChatPacketListener;
-import me.dordsor21.AdvSwearBlock.listener.PlayerSignPacketListener;
+import me.dordsor21.AdvSwearBlock.listener.*;
 import me.dordsor21.AdvSwearBlock.util.Ignore;
 import me.dordsor21.AdvSwearBlock.util.SQL;
 import me.dordsor21.AdvSwearBlock.util.SwearList;
@@ -46,6 +43,7 @@ public class Main extends JavaPlugin {
     private ChatListener chatListener;
     private JoinLeaveListener joinLeaveListener;
     private ProtocolManager pM;
+    public boolean failSilent;
 
     @Override
     public void onEnable() {
@@ -95,11 +93,12 @@ public class Main extends JavaPlugin {
     }
 
     private void loadConfigValues() {
-        prefix = getConfig().getString("prefix");
-        persistence = getConfig().getBoolean("persistence");
-        ignoring = getConfig().getBoolean("ignoring.enabled");
+        prefix = getConfig().getString("prefix", "&2[AdvSB]&r ");
+        persistence = getConfig().getBoolean("persistence", false);
+        ignoring = getConfig().getBoolean("ignoring.enabled", true);
         ignoreSwear = getConfig().getStringList("swearing.not-blocked");
         signs = getConfig().getBoolean("swearing.signs", true);
+        failSilent = getConfig().getBoolean("failsilently", false);
     }
 
     public void reloadNoSwearList() {

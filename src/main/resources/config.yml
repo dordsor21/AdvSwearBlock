@@ -9,6 +9,8 @@
 #
 # Whether to use MySQL or not. !!Required for use of ignoring!!
 persistence: true
+# Whether to print errors when the chat packet parser does poop itself
+failsilently: false
 # Enabled detecting messages with a lot of spaces l i k e t h i s. Limit is the maximum
 #  fraction of spaces divided by none-spaces allowed
 spaces:
