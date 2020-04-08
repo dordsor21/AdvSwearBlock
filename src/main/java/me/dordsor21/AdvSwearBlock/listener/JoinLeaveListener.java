@@ -32,8 +32,7 @@ public class JoinLeaveListener implements Listener {
         firstSwear = plugin.getConfig().getBoolean("sendMessageOnFirstSwear");
     }
 
-    @EventHandler()
-    public void onPlayerLeave(final PlayerQuitEvent e) {
+    @EventHandler() public void onPlayerLeave(final PlayerQuitEvent e) {
         Player pl = e.getPlayer();
         if (plugin.ignoring)
             plugin.ignore.removeIgnorer(pl.getUniqueId());
@@ -47,7 +46,8 @@ public class JoinLeaveListener implements Listener {
             Player p = e.getPlayer();
             UUID uuid = p.getUniqueId();
             if (plugin.ignoring) {
-                if (plugin.sql.isIgnoreree(uuid) && plugin.sql.isIgnoring(uuid)) {//loads any ignored players into cache.
+                if (plugin.sql.isIgnoreree(uuid) && plugin.sql
+                    .isIgnoring(uuid)) {//loads any ignored players into cache.
                     String[] ignorees = plugin.sql.getIgnorees(uuid).split(",");
                     try {
                         List<String> toIgnore = new ArrayList<>();
@@ -69,16 +69,20 @@ public class JoinLeaveListener implements Listener {
                     } catch (StringIndexOutOfBoundsException ignored) {
                     }
                 }
-                if (p.hasPermission("asb.noignore") && !plugin.ignore.cannotIgnore.contains(p.getName().toLowerCase())) {
+                if (p.hasPermission("asb.noignore") && !plugin.ignore.cannotIgnore
+                    .contains(p.getName().toLowerCase())) {
                     plugin.ignore.cannotIgnore.add(p.getName().toLowerCase());
                     plugin.sql.setCannotIgnore(p.getUniqueId(), true);
                 }
-                if (!p.hasPermission("asb.noignore") && plugin.ignore.cannotIgnore.contains(p.getName().toLowerCase())) {
+                if (!p.hasPermission("asb.noignore") && plugin.ignore.cannotIgnore
+                    .contains(p.getName().toLowerCase())) {
                     plugin.ignore.cannotIgnore.remove(p.getName().toLowerCase());
                     plugin.sql.setCannotIgnore(p.getUniqueId(), false);
                 }
             }
-            if ((plugin.persistence && plugin.sql.swearBlock(p.getUniqueId())) || plugin.getConfig().getBoolean("swearing.defaultStatus")) {//turns swearblock on (persistant cross-network n stuff)
+            if ((plugin.persistence && plugin.sql.swearBlock(p.getUniqueId())) || plugin.getConfig()
+                .getBoolean(
+                    "swearing.defaultStatus")) {//turns swearblock on (persistant cross-network n stuff)
                 p.setMetadata("swearBlock", new FixedMetadataValue(plugin, true));
                 if (firstSwear)
                     p.setMetadata("firstSwear", new FixedMetadataValue(plugin, true));

@@ -38,18 +38,21 @@ public class ChatListener implements Listener {
         Player p = e.getPlayer();
         if (cd && !p.hasPermission("asb.bypass.cooldown")) {
             if (p.hasMetadata("cooldown")) {
-                p.sendMessage(plugin.messages.get("cooldown").replace("{{cooldown}}", String.valueOf(cooldown.doubleValue() / 20)));
+                p.sendMessage(plugin.messages.get("cooldown")
+                    .replace("{{cooldown}}", String.valueOf(cooldown.doubleValue() / 20)));
                 e.setCancelled(true);
                 return;
             } else {
                 p.setMetadata("cooldown", new FixedMetadataValue(plugin, true));
-                plugin.getServer().getScheduler().runTaskLater(plugin, () -> p.removeMetadata("cooldown", plugin), cooldown);
+                plugin.getServer().getScheduler()
+                    .runTaskLater(plugin, () -> p.removeMetadata("cooldown", plugin), cooldown);
             }
         }
         if (spaces && !p.hasPermission("asb.bypass.spacecheck")) {
             String msg = e.getMessage();
-            if (msg.contains(" ") && ((double) msg.replaceAll("[^ ]", "").length() / (double) msg.replaceAll("[ ]", "").length()) >=
-                    spaceLimit) {
+            if (msg.contains(" ") &&
+                ((double) msg.replaceAll("[^ ]", "").length() / (double) msg.replaceAll("[ ]", "")
+                    .length()) >= spaceLimit) {
                 p.sendMessage(plugin.messages.get("spaceLimit"));
                 e.setCancelled(true);
             }

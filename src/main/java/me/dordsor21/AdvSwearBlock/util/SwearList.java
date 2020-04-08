@@ -68,7 +68,7 @@ public class SwearList {
             String multiplier = "nomultiplier";
             if (m.equalsIgnoreCase("m") || m.equalsIgnoreCase("multiplier"))
                 multiplier = "multiplier";
-            else if(m.equalsIgnoreCase("o") || m.equalsIgnoreCase("onlymatch"))
+            else if (m.equalsIgnoreCase("o") || m.equalsIgnoreCase("onlymatch"))
                 multiplier = "onlymatch";
             StringBuilder successes = new StringBuilder();
             StringBuilder failures = new StringBuilder();
@@ -86,9 +86,11 @@ public class SwearList {
             swearFile.save(file);
 
             if (!successes.toString().isEmpty())
-                sender.sendMessage(plugin.messages.get("badWordAddSuccess").replace("{{words}}", successes.substring(0, successes.length() - 2)));
+                sender.sendMessage(plugin.messages.get("badWordAddSuccess")
+                    .replace("{{words}}", successes.substring(0, successes.length() - 2)));
             if (!failures.toString().isEmpty())
-                sender.sendMessage(plugin.messages.get("badWordAddFailure").replace("{{words}}", failures.substring(0, failures.length() - 2)));
+                sender.sendMessage(plugin.messages.get("badWordAddFailure")
+                    .replace("{{words}}", failures.substring(0, failures.length() - 2)));
         } catch (IOException | InvalidConfigurationException e) {
             e.printStackTrace();
         }
@@ -100,7 +102,7 @@ public class SwearList {
             String multiplier = "nomultiplier";
             if (m.equalsIgnoreCase("m") || m.equalsIgnoreCase("multiplier"))
                 multiplier = "multiplier";
-            else if(m.equalsIgnoreCase("o") || m.equalsIgnoreCase("onlymatch"))
+            else if (m.equalsIgnoreCase("o") || m.equalsIgnoreCase("onlymatch"))
                 multiplier = "onlymatch";
             StringBuilder successes = new StringBuilder();
             StringBuilder failures = new StringBuilder();
@@ -118,9 +120,11 @@ public class SwearList {
             swearFile.save(file);
 
             if (!successes.toString().isEmpty())
-                sender.sendMessage(plugin.messages.get("badWordRemoveSuccess").replace("{{words}}", successes.substring(0, successes.length() - 2)));
+                sender.sendMessage(plugin.messages.get("badWordRemoveSuccess")
+                    .replace("{{words}}", successes.substring(0, successes.length() - 2)));
             if (!failures.toString().isEmpty())
-                sender.sendMessage(plugin.messages.get("badWordRemoveFailure").replace("{{words}}", failures.substring(0, failures.length() - 2)));
+                sender.sendMessage(plugin.messages.get("badWordRemoveFailure")
+                    .replace("{{words}}", failures.substring(0, failures.length() - 2)));
         } catch (IOException | InvalidConfigurationException e) {
             e.printStackTrace();
         }
@@ -130,7 +134,7 @@ public class SwearList {
         String multiplier = "nomultiplier";
         if (m.equalsIgnoreCase("m") || m.equalsIgnoreCase("multiplier"))
             multiplier = "multiplier";
-        else if(m.equalsIgnoreCase("o") || m.equalsIgnoreCase("onlymatch"))
+        else if (m.equalsIgnoreCase("o") || m.equalsIgnoreCase("onlymatch"))
             multiplier = "onlymatch";
         if (!(sender instanceof Player)) {
             sender.sendMessage(badWords.toString());
@@ -139,11 +143,16 @@ public class SwearList {
         int pageSize = plugin.getConfig().getInt("swearing.listPageSize");
         Player p = (Player) sender;
         int pages = (int) Math.ceil(badWords.size() / pageSize);
-        p.sendMessage(plugin.messages.get("listBadWordsTop").replace("{{count}}", String.valueOf(pageSize)).replace("{{total}}", String.valueOf(badWords.size())
-                .replace("{{multiplier}}", multiplier)));
-        for (String word : badWords.get(multiplier).subList((page * pageSize) - pageSize, page * pageSize - 1))
+        p.sendMessage(
+            plugin.messages.get("listBadWordsTop").replace("{{count}}", String.valueOf(pageSize))
+                .replace("{{total}}",
+                    String.valueOf(badWords.size()).replace("{{multiplier}}", multiplier)));
+        for (String word : badWords.get(multiplier)
+            .subList((page * pageSize) - pageSize, page * pageSize - 1))
             p.sendMessage("   " + word);
-        p.sendMessage(plugin.messages.get("listBadWordsBottom").replace("{{page}}", String.valueOf(page)).replace("{{pagecount}}", String.valueOf(pages)));
+        p.sendMessage(
+            plugin.messages.get("listBadWordsBottom").replace("{{page}}", String.valueOf(page))
+                .replace("{{pagecount}}", String.valueOf(pages)));
     }
 
 }

@@ -11,7 +11,11 @@ import com.comphenix.protocol.ProtocolManager;
 import me.dordsor21.AdvSwearBlock.cmd.IgnoreCmd;
 import me.dordsor21.AdvSwearBlock.cmd.MainCmd;
 import me.dordsor21.AdvSwearBlock.cmd.SwearWordCmd;
-import me.dordsor21.AdvSwearBlock.listener.*;
+import me.dordsor21.AdvSwearBlock.listener.ChatListener;
+import me.dordsor21.AdvSwearBlock.listener.JoinLeaveListener;
+import me.dordsor21.AdvSwearBlock.listener.PlayerBookPacketListener;
+import me.dordsor21.AdvSwearBlock.listener.PlayerChatPacketListener;
+import me.dordsor21.AdvSwearBlock.listener.PlayerSignPacketListener;
 import me.dordsor21.AdvSwearBlock.util.Ignore;
 import me.dordsor21.AdvSwearBlock.util.SQL;
 import me.dordsor21.AdvSwearBlock.util.SwearList;
@@ -29,24 +33,23 @@ public class Main extends JavaPlugin {
 
     public static Main plugin;
     public List<String> ignoreSwear = new ArrayList<>();
-    private String prefix;
     public SwearList swearList;
     public Ignore ignore;
     public SQL sql;
     public UUIDs uuids;
     public Boolean persistence;
     public Boolean ignoring;
-    private Boolean signs;
     public Map<String, String> messages;
+    public boolean failSilent;
+    private String prefix;
+    private Boolean signs;
     private PlayerChatPacketListener playerChatPacketListener;
     private PlayerSignPacketListener playerSignPacketListener;
     private ChatListener chatListener;
     private JoinLeaveListener joinLeaveListener;
     private ProtocolManager pM;
-    public boolean failSilent;
 
-    @Override
-    public void onEnable() {
+    @Override public void onEnable() {
 
         plugin = this;
 
@@ -55,8 +58,10 @@ public class Main extends JavaPlugin {
         loadConfigValues();
         messages = new HashMap<>();
 
-        for (String message : getConfig().getConfigurationSection("messages").getValues(false).keySet())
-            messages.put(message, ChatColor.translateAlternateColorCodes('&', prefix + getConfig().getString("messages." + message)));
+        for (String message : getConfig().getConfigurationSection("messages").getValues(false)
+            .keySet())
+            messages.put(message, ChatColor.translateAlternateColorCodes('&',
+                prefix + getConfig().getString("messages." + message)));
 
         if (persistence) {
             sql = new SQL(this);
@@ -64,7 +69,8 @@ public class Main extends JavaPlugin {
         }
 
         if (ignoring && !persistence) {
-            getLogger().severe(prefix + " You cannot have ignoring enabled without persistence (MySQL)! Turning ignoring off!");
+            getLogger().severe(prefix
+                + " You cannot have ignoring enabled without persistence (MySQL)! Turning ignoring off!");
             ignoring = false;
         }
 
@@ -131,7 +137,8 @@ public class Main extends JavaPlugin {
             ignore = new Ignore(this);
             getCommand("ignore").setExecutor(new IgnoreCmd(this, ignore));
         } else if (ignoring) {
-            getLogger().severe(prefix + " You cannot have ignoring enabled without persistence (MySQL)! Turning ignoring off!");
+            getLogger().severe(prefix
+                + " You cannot have ignoring enabled without persistence (MySQL)! Turning ignoring off!");
             ignoring = false;
         }
     }
@@ -140,8 +147,10 @@ public class Main extends JavaPlugin {
         reloadConfig();
         messages = new HashMap<>();
         prefix = getConfig().getString("prefix");
-        for (String message : getConfig().getConfigurationSection("messages").getValues(false).keySet())
-            messages.put(message, ChatColor.translateAlternateColorCodes('&', prefix + getConfig().getString("messages." + message)));
+        for (String message : getConfig().getConfigurationSection("messages").getValues(false)
+            .keySet())
+            messages.put(message, ChatColor.translateAlternateColorCodes('&',
+                prefix + getConfig().getString("messages." + message)));
     }
 
     public void reloadPersistance() {

@@ -14,8 +14,8 @@ import java.util.UUID;
 
 public class Ignore {
 
-    private HashMap<UUID, List<String>> ignoreCache;
     public List<String> cannotIgnore;
+    private HashMap<UUID, List<String>> ignoreCache;
 
     public Ignore(Main plugin) {
         ignoreCache = new HashMap<>();

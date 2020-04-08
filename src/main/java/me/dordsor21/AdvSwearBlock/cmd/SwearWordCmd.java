@@ -49,7 +49,8 @@ public class SwearWordCmd implements CommandExecutor {
                     p.sendMessage(plugin.messages.get("swearBlockUsage"));
                 }
             } else {
-                p.sendMessage(plugin.messages.get("noPermission").replace("{{permission}}", "asb.swear.toggle"));
+                p.sendMessage(plugin.messages.get("noPermission")
+                    .replace("{{permission}}", "asb.swear.toggle"));
             }
         } else
             sender.sendMessage(plugin.messages.get("notPlayer"));

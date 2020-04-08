@@ -13,15 +13,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 public class SQL {
 
     private final static HashMap<String, String> columns;
-
-    private String tableName;
-
-    private boolean initialised;
 
     static {
         columns = new HashMap<>();
@@ -33,6 +34,8 @@ public class SQL {
         columns.put("canBeIgnored", "BOOLEAN!DEFAULT=FALSE!");
     }
 
+    private String tableName;
+    private boolean initialised;
     private Connection conn;
     private Main plugin;
 
@@ -40,7 +43,8 @@ public class SQL {
         this.plugin = plugin;
         tableName = plugin.getConfig().getString("SQL.tablePrefix", "") + "advSwearBlock";
 
-        columns.put("isBlocking", "BOOLEAN!DEFAULT=" + plugin.getConfig().getBoolean("defaultStatus", true) + "!");
+        columns.put("isBlocking",
+            "BOOLEAN!DEFAULT=" + plugin.getConfig().getBoolean("defaultStatus", true) + "!");
     }
 
     public boolean initialise() {
@@ -77,8 +81,9 @@ public class SQL {
 
     private void tableExists() {
         try {
-            PreparedStatement stm = conn.prepareStatement("CREATE TABLE IF NOT EXISTS " + tableName + " (id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, uuid VARCHAR(32) NOT NULL, name VARCHAR(16) NOT NULL," +
-                    " ignoreNo INT(11) DEFAULT 0, ignorees VARCHAR(255), isBlocking BOOLEAN DEFAULT ?, canBeIgnored BOOLEAN DEFAULT FALSE)");
+            PreparedStatement stm = conn.prepareStatement("CREATE TABLE IF NOT EXISTS " + tableName
+                + " (id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, uuid VARCHAR(32) NOT NULL, name VARCHAR(16) NOT NULL,"
+                + " ignoreNo INT(11) DEFAULT 0, ignorees VARCHAR(255), isBlocking BOOLEAN DEFAULT ?, canBeIgnored BOOLEAN DEFAULT FALSE)");
             stm.setBoolean(1, plugin.getConfig().getBoolean("defaultStatus"));
             stm.executeUpdate();
         } catch (SQLException e) {
@@ -89,7 +94,8 @@ public class SQL {
     private void checkColumns() {
         try {
             for (String col : columns.keySet()) {
-                PreparedStatement stmt1 = conn.prepareStatement("SELECT column_name FROM INFORMATION_SCHEMA.columns "
+                PreparedStatement stmt1 = conn.prepareStatement(
+                    "SELECT column_name FROM INFORMATION_SCHEMA.columns "
                         + "WHERE table_name = 'ignoring' AND column_name = '" + col + "';");
                 ResultSet result = stmt1.executeQuery();
                 if (!result.next()) {
@@ -118,7 +124,9 @@ public class SQL {
                             type = type.split("!")[0].replace("!", "");
                         }
                     }
-                    PreparedStatement stmt = conn.prepareStatement("ALTER TABLE " + tableName + " ADD COLUMN (" + col + " " + type + def + nul + auto_incr + key + ");");
+                    PreparedStatement stmt = conn.prepareStatement(
+                        "ALTER TABLE " + tableName + " ADD COLUMN (" + col + " " + type + def + nul
+                            + auto_incr + key + ");");
                     stmt.executeUpdate();
                     plugin.getLogger().info("Column " + col + " created");
                     stmt.close();
@@ -132,7 +140,8 @@ public class SQL {
 
     UUID uuidFromCache(String name) {
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT uuid from " + tableName + " where LOWER(name)=?");
+            PreparedStatement stmt =
+                conn.prepareStatement("SELECT uuid from " + tableName + " where LOWER(name)=?");
             stmt.setString(1, name.toLowerCase());
             ResultSet res = stmt.executeQuery();
             if (res.next()) {
@@ -148,7 +157,8 @@ public class SQL {
 
     String nameFromCache(UUID uuid) {
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT name FROM " + tableName + " WHERE uuid=?");
+            PreparedStatement stmt =
+                conn.prepareStatement("SELECT name FROM " + tableName + " WHERE uuid=?");
             stmt.setString(1, plugin.uuids.niceUUID(uuid));
             ResultSet res = stmt.executeQuery();
             if (res.next()) {
@@ -163,7 +173,8 @@ public class SQL {
 
     private void createIgnoreree(UUID uuid, int no) {
         try {
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO " + tableName + " (uuid, ignoreNo) VALUES (?,?)");
+            PreparedStatement stmt = conn.prepareStatement(
+                "INSERT INTO " + tableName + " (uuid, ignoreNo) VALUES (?,?)");
             stmt.setString(1, plugin.uuids.niceUUID(uuid));
             stmt.setInt(2, no);
             stmt.executeUpdate();
@@ -175,7 +186,8 @@ public class SQL {
 
     public boolean isIgnoreree(UUID uuid) {
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT id FROM " + tableName + " WHERE uuid=?");
+            PreparedStatement stmt =
+                conn.prepareStatement("SELECT id FROM " + tableName + " WHERE uuid=?");
             stmt.setString(1, plugin.uuids.niceUUID(uuid));
             ResultSet res = stmt.executeQuery();
             boolean ret = res.next();
@@ -190,7 +202,8 @@ public class SQL {
     private String getIgnorereeID(UUID uuid) {
         if (isIgnoreree(uuid)) {
             try {
-                PreparedStatement stmt = conn.prepareStatement("SELECT id FROM " + tableName + " WHERE uuid=?");
+                PreparedStatement stmt =
+                    conn.prepareStatement("SELECT id FROM " + tableName + " WHERE uuid=?");
                 stmt.setString(1, plugin.uuids.niceUUID(uuid));
                 ResultSet res = stmt.executeQuery();
                 if (res.next()) {
@@ -211,7 +224,8 @@ public class SQL {
 
     public String getNamefromID(String id) {
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT name FROM " + tableName + " WHERE id=?");
+            PreparedStatement stmt =
+                conn.prepareStatement("SELECT name FROM " + tableName + " WHERE id=?");
             stmt.setString(1, id);
             ResultSet res = stmt.executeQuery();
             if (res.next()) {
@@ -233,7 +247,8 @@ public class SQL {
         if (s.equals(","))
             return false;
         try {
-            List<String> ignorees = new ArrayList<>(Arrays.asList(s.substring(1, s.length() - 1).split(",")));
+            List<String> ignorees =
+                new ArrayList<>(Arrays.asList(s.substring(1, s.length() - 1).split(",")));
             return ignorees.contains(iID);
         } catch (StringIndexOutOfBoundsException e) {
             return false;
@@ -242,7 +257,8 @@ public class SQL {
 
     private void incrIgnoredNo(String iID) {
         try {
-            PreparedStatement stmt = conn.prepareStatement("UPDATE " + tableName + " SET ignoreNo = ignoreNo + 1 WHERE id=?;");
+            PreparedStatement stmt = conn.prepareStatement(
+                "UPDATE " + tableName + " SET ignoreNo = ignoreNo + 1 WHERE id=?;");
             stmt.setInt(1, Integer.valueOf(iID));
             stmt.executeUpdate();
             stmt.close();
@@ -253,7 +269,8 @@ public class SQL {
 
     private void lwrIgnoredNo(String iID) {
         try {
-            PreparedStatement stmt = conn.prepareStatement("UPDATE " + tableName + " SET ignoreNo = ignoreNo - 1 WHERE id=?;");
+            PreparedStatement stmt = conn.prepareStatement(
+                "UPDATE " + tableName + " SET ignoreNo = ignoreNo - 1 WHERE id=?;");
             stmt.setInt(1, Integer.valueOf(iID));
             stmt.executeUpdate();
             stmt.close();
@@ -275,7 +292,8 @@ public class SQL {
         }
         try {
             ignorees = ignorees + iID + ",";
-            PreparedStatement stmt = conn.prepareStatement("UPDATE " + tableName + " SET ignorees=? WHERE uuid=?");
+            PreparedStatement stmt =
+                conn.prepareStatement("UPDATE " + tableName + " SET ignorees=? WHERE uuid=?");
             stmt.setString(1, ignorees);
             stmt.setString(2, plugin.uuids.niceUUID(ignorer));
             stmt.executeUpdate();
@@ -294,7 +312,8 @@ public class SQL {
                     return;
                 ignorees = ignorees.replace("," + iID + ",", ",");
                 lwrIgnoredNo(iID);
-                PreparedStatement stmt = conn.prepareStatement("UPDATE " + tableName + " SET ignorees=? WHERE uuid=?");
+                PreparedStatement stmt =
+                    conn.prepareStatement("UPDATE " + tableName + " SET ignorees=? WHERE uuid=?");
                 stmt.setString(1, ignorees);
                 stmt.setString(2, plugin.uuids.niceUUID(ignorer));
                 stmt.executeUpdate();
@@ -310,7 +329,8 @@ public class SQL {
             createIgnoreree(ignorer, 0);
         StringBuilder cIgnorees = new StringBuilder(getIgnorees(ignorer));
         List<String> lIgnorees = new ArrayList<>();
-        if (cIgnorees.length() > 0 && !cIgnorees.toString().equals(",") && !cIgnorees.toString().equalsIgnoreCase("null")) {
+        if (cIgnorees.length() > 0 && !cIgnorees.toString().equals(",") && !cIgnorees.toString()
+            .equalsIgnoreCase("null")) {
             try {
                 String[] test = cIgnorees.substring(1, cIgnorees.length() - 1).split(",");
                 Collections.addAll(lIgnorees, test);
@@ -331,7 +351,8 @@ public class SQL {
                 cIgnorees.append(iID).append(",");
                 incrIgnoredNo(iID);
             }
-            PreparedStatement stmt = conn.prepareStatement("UPDATE " + tableName + " SET ignorees=? WHERE uuid=?");
+            PreparedStatement stmt =
+                conn.prepareStatement("UPDATE " + tableName + " SET ignorees=? WHERE uuid=?");
             stmt.setString(1, cIgnorees.toString());
             stmt.setString(2, plugin.uuids.niceUUID(ignorer));
             stmt.executeUpdate();
@@ -354,7 +375,8 @@ public class SQL {
                 cIgnorees = cIgnorees.replace("," + iID + ",", ",");
                 lwrIgnoredNo(iID);
             }
-            PreparedStatement stmt = conn.prepareStatement("UPDATE " + tableName + " SET ignorees=? WHERE uuid=?");
+            PreparedStatement stmt =
+                conn.prepareStatement("UPDATE " + tableName + " SET ignorees=? WHERE uuid=?");
             stmt.setString(1, cIgnorees);
             stmt.setString(2, plugin.uuids.niceUUID(ignorer));
             stmt.executeUpdate();
@@ -366,7 +388,8 @@ public class SQL {
 
     public UUID getIgnorantUUID(String id) {
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT uuid FROM " + tableName + " WHERE id=?");
+            PreparedStatement stmt =
+                conn.prepareStatement("SELECT uuid FROM " + tableName + " WHERE id=?");
             stmt.setString(1, id);
             ResultSet res = stmt.executeQuery();
             String ret = "";
@@ -382,7 +405,8 @@ public class SQL {
 
     public boolean isIgnoring(UUID uuid) {
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT id FROM  " + tableName + " WHERE uuid=? AND ignorees IS NOT NULL");
+            PreparedStatement stmt = conn.prepareStatement(
+                "SELECT id FROM  " + tableName + " WHERE uuid=? AND ignorees IS NOT NULL");
             stmt.setString(1, plugin.uuids.niceUUID(uuid));
             ResultSet res = stmt.executeQuery();
             boolean ret = res.next();
@@ -396,7 +420,8 @@ public class SQL {
 
     public String getIgnorees(UUID ignorer) {
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT ignorees FROM " + tableName + " WHERE uuid=?");
+            PreparedStatement stmt =
+                conn.prepareStatement("SELECT ignorees FROM " + tableName + " WHERE uuid=?");
             stmt.setString(1, plugin.uuids.niceUUID(ignorer));
             ResultSet res = stmt.executeQuery();
             if (res.next()) {
@@ -415,7 +440,8 @@ public class SQL {
 
     public List<String> noIgnoreList() {
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT name FROM " + tableName + " WHERE canBeIgnored = 0");
+            PreparedStatement stmt =
+                conn.prepareStatement("SELECT name FROM " + tableName + " WHERE canBeIgnored = 0");
             ResultSet res = stmt.executeQuery();
             List<String> ret = new ArrayList<>();
             while (res.next())
@@ -431,7 +457,8 @@ public class SQL {
 
     public void setCannotIgnore(UUID uuid, boolean bool) {
         try {
-            PreparedStatement stmt = conn.prepareStatement("UPDATE " + tableName + " SET canBeIgnored=? WHERE uuid=?");
+            PreparedStatement stmt =
+                conn.prepareStatement("UPDATE " + tableName + " SET canBeIgnored=? WHERE uuid=?");
             stmt.setBoolean(1, bool);
             stmt.setString(2, plugin.uuids.niceUUID(uuid));
             stmt.executeUpdate();
@@ -443,7 +470,8 @@ public class SQL {
 
     public boolean swearBlock(UUID uuid) {
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT isBlocking FROM " + tableName + " WHERE uuid=?");
+            PreparedStatement stmt =
+                conn.prepareStatement("SELECT isBlocking FROM " + tableName + " WHERE uuid=?");
             stmt.setString(1, plugin.uuids.niceUUID(uuid));
             ResultSet res = stmt.executeQuery();
             if (!res.next())
@@ -457,7 +485,8 @@ public class SQL {
 
     public void setSwearBlock(UUID uuid, boolean sb) {
         try {
-            PreparedStatement stmt = conn.prepareStatement("UPDATE " + tableName + " SET isBlocking=? WHERE uuid=?");
+            PreparedStatement stmt =
+                conn.prepareStatement("UPDATE " + tableName + " SET isBlocking=? WHERE uuid=?");
             stmt.setBoolean(1, sb);
             stmt.setString(2, plugin.uuids.niceUUID(uuid));
             stmt.executeUpdate();

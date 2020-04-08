@@ -25,7 +25,8 @@ public class MainCmd implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String strng, String[] args) {
         if (!sender.hasPermission("asb.admin")) {
-            sender.sendMessage(plugin.messages.get("noPermission").replace("{{permission}}", "asb.admin"));
+            sender.sendMessage(
+                plugin.messages.get("noPermission").replace("{{permission}}", "asb.admin"));
             return true;
         }
         if (args.length == 0) {
@@ -40,7 +41,9 @@ public class MainCmd implements CommandExecutor {
                 break;
             case "add":
                 if (args.length > 2) {
-                    if (!Arrays.asList(new String[]{"m", "nom", "o", "multiplier", "nomultiplier", "onlymatch"}).contains(args[1].toLowerCase())) {
+                    if (!Arrays.asList(
+                        new String[] {"m", "nom", "o", "multiplier", "nomultiplier", "onlymatch"})
+                        .contains(args[1].toLowerCase())) {
                         sender.sendMessage(plugin.messages.get("asbListUsage"));
                         break;
                     }
@@ -51,17 +54,21 @@ public class MainCmd implements CommandExecutor {
                 break;
             case "remove":
                 if (args.length > 2) {
-                    if (!Arrays.asList(new String[]{"m", "nom", "multiplier", "nomultiplier"}).contains(args[1].toLowerCase())) {
+                    if (!Arrays.asList(new String[] {"m", "nom", "multiplier", "nomultiplier"})
+                        .contains(args[1].toLowerCase())) {
                         sender.sendMessage(plugin.messages.get("asbListUsage"));
                         break;
                     }
-                    plugin.swearList.remove(sender, Arrays.copyOfRange(args, 2, args.length), args[1]);
+                    plugin.swearList
+                        .remove(sender, Arrays.copyOfRange(args, 2, args.length), args[1]);
                 } else
                     sender.sendMessage(plugin.messages.get("asbRemoveUsage"));
                 break;
             case "list":
                 if (args.length > 1) {
-                    if (!Arrays.asList(new String[]{"m", "nom", "o", "multiplier", "nomultiplier", "onlymatch"}).contains(args[1].toLowerCase())) {
+                    if (!Arrays.asList(
+                        new String[] {"m", "nom", "o", "multiplier", "nomultiplier", "onlymatch"})
+                        .contains(args[1].toLowerCase())) {
                         sender.sendMessage(plugin.messages.get("asbListUsage"));
                         break;
                     }
@@ -79,12 +86,14 @@ public class MainCmd implements CommandExecutor {
                 break;
             case "refresh":
                 for (Player p : plugin.getServer().getOnlinePlayers()) {
-                    if (p.hasPermission("asb.noignore") && !plugin.ignore.cannotIgnore.contains(p.getName().toLowerCase())) {
+                    if (p.hasPermission("asb.noignore") && !plugin.ignore.cannotIgnore
+                        .contains(p.getName().toLowerCase())) {
                         plugin.ignore.cannotIgnore.add(p.getName().toLowerCase());
                         plugin.sql.setCannotIgnore(p.getUniqueId(), true);
                         continue;
                     }
-                    if (!p.hasPermission("asb.noignore") && plugin.ignore.cannotIgnore.contains(p.getName().toLowerCase())) {
+                    if (!p.hasPermission("asb.noignore") && plugin.ignore.cannotIgnore
+                        .contains(p.getName().toLowerCase())) {
                         plugin.ignore.cannotIgnore.remove(p.getName().toLowerCase());
                         plugin.sql.setCannotIgnore(p.getUniqueId(), false);
                     }
@@ -105,7 +114,8 @@ public class MainCmd implements CommandExecutor {
                 plugin.reloadNoSwearList();
                 plugin.reloadMessages();
                 plugin.reloadIgnore();
-                sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", "all"));
+                sender.sendMessage(
+                    plugin.messages.get("asbReloaded").replace("{{component}}", "all"));
                 return;
             }
             String component = args[1];
@@ -113,20 +123,24 @@ public class MainCmd implements CommandExecutor {
                 case "swearlist":
                     plugin.reloadPersistance();
                     plugin.reloadSwearList();
-                    sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", component));
+                    sender.sendMessage(
+                        plugin.messages.get("asbReloaded").replace("{{component}}", component));
                     break;
                 case "noswearlist":
                     plugin.reloadNoSwearList();
-                    sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", component));
+                    sender.sendMessage(
+                        plugin.messages.get("asbReloaded").replace("{{component}}", component));
                     break;
                 case "messages":
                     plugin.reloadMessages();
-                    sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", component));
+                    sender.sendMessage(
+                        plugin.messages.get("asbReloaded").replace("{{component}}", component));
                     break;
                 case "ignore":
                     plugin.reloadPersistance();
                     plugin.reloadIgnore();
-                    sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", component));
+                    sender.sendMessage(
+                        plugin.messages.get("asbReloaded").replace("{{component}}", component));
                     break;
                 case "all":
                     plugin.reloadPersistance();
@@ -134,7 +148,8 @@ public class MainCmd implements CommandExecutor {
                     plugin.reloadNoSwearList();
                     plugin.reloadMessages();
                     plugin.reloadIgnore();
-                    sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", component));
+                    sender.sendMessage(
+                        plugin.messages.get("asbReloaded").replace("{{component}}", component));
                     break;
                 default:
                     plugin.reloadPersistance();
@@ -142,7 +157,8 @@ public class MainCmd implements CommandExecutor {
                     plugin.reloadNoSwearList();
                     plugin.reloadMessages();
                     plugin.reloadIgnore();
-                    sender.sendMessage(plugin.messages.get("asbReloaded").replace("{{component}}", "all"));
+                    sender.sendMessage(
+                        plugin.messages.get("asbReloaded").replace("{{component}}", "all"));
             }
         });
     }
