@@ -13,7 +13,6 @@ import me.dordsor21.AdvSwearBlock.cmd.MainCmd;
 import me.dordsor21.AdvSwearBlock.cmd.SwearWordCmd;
 import me.dordsor21.AdvSwearBlock.listener.ChatListener;
 import me.dordsor21.AdvSwearBlock.listener.JoinLeaveListener;
-import me.dordsor21.AdvSwearBlock.listener.PlayerBookPacketListener;
 import me.dordsor21.AdvSwearBlock.listener.PlayerChatPacketListener;
 import me.dordsor21.AdvSwearBlock.listener.PlayerSignPacketListener;
 import me.dordsor21.AdvSwearBlock.util.Ignore;
