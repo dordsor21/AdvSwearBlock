@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,6 +40,7 @@ public class PlayerChatPacketListener implements Listener {
     private List<String> nomList;
     private List<String> oList;
     private List<String> all;
+    private HashMap<String, Pattern> allPatterns;
     private double multiplier;
     private int incr;
     private Stream<String> stream;
@@ -59,24 +61,22 @@ public class PlayerChatPacketListener implements Listener {
         all = new ArrayList<>();
         all.addAll(mList);
         all.addAll(nomList);
+        stream = pl.ignoreSwear.stream();
+        allPatterns = new HashMap<>();
+        for (String word : all) {
+            StringBuilder regex =
+                new StringBuilder("((?<=&[a-z\\d])|(^|(?<=\\s)))(").append(word.charAt(0))
+                    .append("((&[a-z\\d]))|").append(word.charAt(0)).append(")+");
+            for (int i = 1; i < word.length(); i++) {
+                regex.append("\\s*((").append(word.charAt(i)).append("|&[a-z\\d]))+");
+            }
+            Bukkit.getLogger().info(regex.toString());
+            allPatterns.put(word, Pattern.compile(regex.toString()));
+        }
 
         Bukkit.getPluginManager().registerEvents(this, pl);
         pM.addPacketListener(
             new SBPacketAdapter(pl, ListenerPriority.HIGHEST, PacketType.Play.Server.CHAT));
-    }
-
-    public void reload() {
-        multiplier = pl.getConfig().getDouble("swearing.swearWordMultiplier") >= 1 ?
-            pl.getConfig().getDouble("swearing.swearWordMultiplier") :
-            1;
-        incr = pl.getConfig().getInt("swearing.noMultiplierIncrement");
-        mList = pl.swearList.getList().get("multiplier");
-        nomList = pl.swearList.getList().get("nomultiplier");
-        oList = pl.swearList.getList().get("onlymatch");
-        all = new ArrayList<>();
-        all.addAll(mList);
-        all.addAll(nomList);
-        stream = pl.ignoreSwear.stream();
     }
 
     private class SBPacketAdapter extends PacketAdapter {
@@ -136,14 +136,10 @@ public class PlayerChatPacketListener implements Listener {
                 }
             }
 
-            for (String word : all) {
-                StringBuilder regex =
-                    new StringBuilder("((?<=&[a-fk-o\\d])|(^|(?<=\\s)))(").append(word.charAt(0))
-                        .append("((&[a-fk-o\\d]))|").append(word.charAt(0)).append(")+");
-                for (int i = 1; i < word.length(); i++)
-                    regex.append("\\s*((").append(word.charAt(i)).append("|&[a-fk-o\\d]))+");
-                Matcher matcher = Pattern.compile(regex.toString()).matcher(msg);
-                while (matcher.find() && matcher.group().length() > word.length()) {
+            for (Map.Entry<String, Pattern> patternEntry : allPatterns.entrySet()) {
+                Matcher matcher = patternEntry.getValue().matcher(msg);
+                while (matcher.find() && matcher.group().length() > patternEntry.getKey()
+                    .length()) {
                     int length = matcher.group().length();
                     if (stream.anyMatch(
                         Arrays.asList(matcher.group().toLowerCase().split(" "))::contains)) {
