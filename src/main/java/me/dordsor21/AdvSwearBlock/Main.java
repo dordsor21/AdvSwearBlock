@@ -87,6 +87,8 @@ public class Main extends JavaPlugin {
 
         pM = ProtocolLibrary.getProtocolManager();
 
+        swearList = new SwearList(this);
+
         playerChatPacketListener = new PlayerChatPacketListener(this, pM);
         if (signs) {
             playerSignPacketListener = new PlayerSignPacketListener(this, pM);
@@ -94,8 +96,6 @@ public class Main extends JavaPlugin {
         chatListener = new ChatListener(this);
 
         joinLeaveListener = new JoinLeaveListener(this);
-
-        swearList = new SwearList(this);
     }
 
     private void loadConfigValues() {
