@@ -23,7 +23,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +30,8 @@ import java.util.Map;
 public class Main extends JavaPlugin {
 
     public static Main plugin;
-    public List<String> ignoreSwear = new ArrayList<>();
+    public List<String> ignoreSwear;
+    public String[] ignoreSwearArray;
     public SwearList swearList;
     public Ignore ignore;
     public SQL sql;
@@ -102,6 +102,7 @@ public class Main extends JavaPlugin {
         persistence = getConfig().getBoolean("persistence", false);
         ignoring = getConfig().getBoolean("ignoring.enabled", true);
         ignoreSwear = getConfig().getStringList("swearing.not-blocked");
+        ignoreSwearArray = getConfig().getStringList("ignoreWords.swear").toArray(new String[0]);
         signs = getConfig().getBoolean("swearing.signs", true);
         failSilent = getConfig().getBoolean("failsilently", false);
     }
@@ -109,6 +110,7 @@ public class Main extends JavaPlugin {
     public void reloadNoSwearList() {
         reloadConfig();
         ignoreSwear = getConfig().getStringList("swearing.not-blocked");
+        ignoreSwearArray = getConfig().getStringList("ignoreWords.swear").toArray(new String[0]);
     }
 
     public void reloadSwearList() {
@@ -120,6 +122,7 @@ public class Main extends JavaPlugin {
         HandlerList.unregisterAll(joinLeaveListener);
 
         ignoreSwear = getConfig().getStringList("swearing.not-blocked");
+        ignoreSwearArray = getConfig().getStringList("ignoreWords.swear").toArray(new String[0]);
         signs = getConfig().getBoolean("swearing.signs", true);
 
         playerChatPacketListener = new PlayerChatPacketListener(this, pM);

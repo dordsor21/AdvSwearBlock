@@ -6,144 +6,147 @@
 
 package me.dordsor21.AdvSwearBlock.util;
 
+import org.apache.commons.lang.StringUtils;
+
 public class Json {
 
+
+    private static String[] jsonColour =
+        new String[] {"[{\"text\":\"", "[{\"color\":\"black\",\"text\":\"",
+            "[{\"color\":\"dark_blue\",\"text\":\"", "[{\"color\":\"dark_green\",\"text\":\"",
+            "[{\"color\":\"dark_aqua\",\"text\":\"", "[{\"color\":\"dark_red\",\"text\":\"",
+            "[{\"color\":\"dark_purple\",\"text\":\"", "[{\"color\":\"gold\",\"text\":\"",
+            "[{\"color\":\"gray\",\"text\":\"", "[{\"color\":\"dark_gray\",\"text\":\"",
+            "[{\"color\":\"blue\",\"text\":\"", "[{\"color\":\"green\",\"text\":\"",
+            "[{\"color\":\"aqua\",\"text\":\"", "[{\"color\":\"red\",\"text\":\"",
+            "[{\"color\":\"light_purple\",\"text\":\"", "[{\"color\":\"yellow\",\"text\":\"",
+            "[{\"color\":\"white\",\"text\":\"", "[{\"obfuscated\":true,\"text\":\"",
+            "[{\"bold\":true,\"text\":\"", "[{\"strikethrough\":true,\"text\":\"",
+            "[{\"underlined\":true,\"text\":\"", "[{\"italic\":true,\"text\":\"",
+            "[{\"color\":\"black\",", "[{\"color\":\"dark_blue\",", "[{\"color\":\"dark_green\",",
+            "[{\"color\":\"dark_aqua\",", "[{\"color\":\"dark_red\",",
+            "[{\"color\":\"dark_purple\",", "[{\"color\":\"gold\",", "[{\"color\":\"gray\",",
+            "[{\"color\":\"dark_gray\",", "[{\"color\":\"blue\",", "[{\"color\":\"green\",",
+            "[{\"color\":\"aqua\",", "[{\"color\":\"red\",", "[{\"color\":\"light_purple\",",
+            "[{\"color\":\"yellow\",", "[{\"color\":\"white\",", "[{\"obfuscated\":true,",
+            "[{\"bold\":true,", "[{\"strikethrough\":true,", "[{\"underlined\":true,",
+            "[{\"italic\":true,", "{\"color\":\"black\",\"text\":\"",
+            "{\"color\":\"dark_blue\",\"text\":\"", "{\"color\":\"dark_green\",\"text\":\"",
+            "{\"color\":\"dark_aqua\",\"text\":\"", "{\"color\":\"dark_red\",\"text\":\"",
+            "{\"color\":\"dark_purple\",\"text\":\"", "{\"color\":\"gold\",\"text\":\"",
+            "{\"color\":\"gray\",\"text\":\"", "{\"color\":\"dark_gray\",\"text\":\"",
+            "{\"color\":\"blue\",\"text\":\"", "{\"color\":\"green\",\"text\":\"",
+            "{\"color\":\"aqua\",\"text\":\"", "{\"color\":\"red\",\"text\":\"",
+            "{\"color\":\"light_purple\",\"text\":\"", "{\"color\":\"yellow\",\"text\":\"",
+            "{\"color\":\"white\",\"text\":\"", "{\"obfuscated\":true,\"text\":\"",
+            "{\"bold\":true,\"text\":\"", "{\"strikethrough\":true,\"text\":\"",
+            "{\"underlined\":true,\"text\":\"", "{\"italic\":true,\"text\":\"",
+            "{\"color\":\"black\",", "{\"color\":\"dark_blue\",", "{\"color\":\"dark_green\",",
+            "{\"color\":\"dark_aqua\",", "{\"color\":\"dark_red\",", "{\"color\":\"dark_purple\",",
+            "{\"color\":\"gold\",", "{\"color\":\"gray\",", "{\"color\":\"dark_gray\",",
+            "{\"color\":\"blue\",", "{\"color\":\"green\",", "{\"color\":\"aqua\",",
+            "{\"color\":\"red\",", "{\"color\":\"light_purple\",", "{\"color\":\"yellow\",",
+            "{\"color\":\"white\",", "{\"obfuscated\":true,", "{\"bold\":true,",
+            "{\"strikethrough\":true,", "{\"underlined\":true,", "{\"italic\":true,",
+            "\"color\":\"black\",\"text\":\"", "\"color\":\"dark_blue\",\"text\":\"",
+            "\"color\":\"dark_green\",\"text\":\"", "\"color\":\"dark_aqua\",\"text\":\"",
+            "\"color\":\"dark_red\",\"text\":\"", "\"color\":\"dark_purple\",\"text\":\"",
+            "\"color\":\"gold\",\"text\":\"", "\"color\":\"gray\",\"text\":\"",
+            "\"color\":\"dark_gray\",\"text\":\"", "\"color\":\"blue\",\"text\":\"",
+            "\"color\":\"green\",\"text\":\"", "\"color\":\"aqua\",\"text\":\"",
+            "\"color\":\"red\",\"text\":\"", "\"color\":\"light_purple\",\"text\":\"",
+            "\"color\":\"yellow\",\"text\":\"", "\"color\":\"white\",\"text\":\"",
+            "\"obfuscated\":true,\"text\":\"", "\"bold\":true,\"text\":\"",
+            "\"strikethrough\":true,\"text\":\"", "\"underlined\":true,\"text\":\"",
+            "\"italic\":true,\"text\":\"", "\"color\":\"black\",", "\"color\":\"dark_blue\",",
+            "\"color\":\"dark_green\",", "\"color\":\"dark_aqua\",", "\"color\":\"dark_red\",",
+            "\"color\":\"dark_purple\",", "\"color\":\"gold\",", "\"color\":\"gray\",",
+            "\"color\":\"dark_gray\",", "\"color\":\"blue\",", "\"color\":\"green\",",
+            "\"color\":\"aqua\",", "\"color\":\"red\",", "\"color\":\"light_purple\",",
+            "\"color\":\"yellow\",", "\"color\":\"white\",", "\"obfuscated\":true,",
+            "\"bold\":true,", "\"strikethrough\":true,", "\"underlined\":true,",
+            "\"italic\":true,"};
+    private static String[] replaceJsonColourTo =
+        new String[] {"", "&0", "&1", "&2", "&3", "&4", "&5", "&6", "&7", "&8", "&9", "&a", "&b",
+            "&c", "&d", "&e", "&f", "&k", "&l", "&m", "&n", "&o", "&0", "&1", "&2", "&3", "&4",
+            "&5", "&6", "&7", "&8", "&9", "&a", "&b", "&c", "&d", "&e", "&f", "&k", "&l", "&m",
+            "&n", "&o", "&0", "&1", "&2", "&3", "&4", "&5", "&6", "&7", "&8", "&9", "&a", "&b",
+            "&c", "&d", "&e", "&f", "&k", "&l", "&m", "&n", "&o", "&0", "&1", "&2", "&3", "&4",
+            "&5", "&6", "&7", "&8", "&9", "&a", "&b", "&c", "&d", "&e", "&f", "&k", "&l", "&m",
+            "&n", "&o", "&0", "&1", "&2", "&3", "&4", "&5", "&6", "&7", "&8", "&9", "&a", "&b",
+            "&c", "&d", "&e", "&f", "&k", "&l", "&m", "&n", "&o", "&0", "&1", "&2", "&3", "&4",
+            "&5", "&6", "&7", "&8", "&9", "&a", "&b", "&c", "&d", "&e", "&f", "&k", "&l", "&m",
+            "&n", "&o"};
+    private static String[] codeColour =
+        new String[] {"&0", "&1", "&2", "&3", "&4", "&5", "&6", "&7", "&8", "&9", "&a", "&b", "&c",
+            "&d", "&e", "&f", "&k", "&l", "&m", "&n", "&o", "\"text\":\"\"},{"};
+    private static String[] singleJson = new String[] {"\"color\":\"black\",", "\"color\":\"dark_blue\",",
+        "\"color\":\"dark_green\",", "\"color\":\"dark_aqua\",", "\"color\":\"dark_red\",",
+        "\"color\":\"dark_purple\",", "\"color\":\"gold\",", "\"color\":\"gray\",",
+        "\"color\":\"dark_gray\",", "\"color\":\"blue\",", "\"color\":\"green\",",
+        "\"color\":\"aqua\",", "\"color\":\"red\",", "\"color\":\"light_purple\",",
+        "\"color\":\"yellow\",", "\"color\":\"white\",", "\"obfuscated\":true,", "\"bold\":true,",
+        "\"strikethrough\":true,", "\"underlined\":true,", "\"italic\":true,", ""};
 
     public static String fromReadJson(String input) {
         return input.replace("{\"extra\":", "").replace("],\"text\":\"\"}", "]");
     }
 
-    public static String stripCodes(String m) {
-        return m.replace("&0", "").replace("&1", "").replace("&2", "").replace("&3", "")
-            .replace("&4", "").replace("&5", "").replace("&6", "").replace("&7", "")
-            .replace("&8", "").replace("&9", "").replace("&a", "").replace("&b", "")
-            .replace("&c", "").replace("&d", "").replace("&e", "").replace("&f", "")
-            .replace("&k", "").replace("&l", "").replace("&m", "").replace("&n", "")
-            .replace("&o", "");
+    public static String colourCodeToJson(String msg, String i) {
+        return StringUtils.replaceEach(msg,
+            new String[] {i + "0", i + "1", i + "2", i + "3", i + "4", i + "5", i + "6", i + "7",
+                i + "8", i + "9", i + "a", i + "b", i + "c", i + "d", i + "e", i + "f", i + "k",
+                i + "l", i + "m", i + "n", i + "o", "\"text\":\"\"},~~,{", "\"text\":\"\"},{"},
+            new String[] {"\"},~~,{\"color\":\"black\",\"text\":\"",
+                "\"},~~,{\"color\":\"dark_blue\",\"text\":\"",
+                "\"},~~,{\"color\":\"dark_green\",\"text\":\"",
+                "\"},~~,{\"color\":\"dark_aqua\",\"text\":\"",
+                "\"},~~,{\"color\":\"dark_red\",\"text\":\"",
+                "\"},~~,{\"color\":\"dark_purple\",\"text\":\"",
+                "\"},~~,{\"color\":\"gold\",\"text\":\"", "\"},~~,{\"color\":\"gray\",\"text\":\"",
+                "\"},~~,{\"color\":\"dark_gray\",\"text\":\"",
+                "\"},~~,{\"color\":\"blue\",\"text\":\"", "\"},~~,{\"color\":\"green\",\"text\":\"",
+                "\"},~~,{\"color\":\"aqua\",\"text\":\"", "\"},~~,{\"color\":\"red\",\"text\":\"",
+                "\"},~~,{\"color\":\"light_purple\",\"text\":\"",
+                "\"},~~,{\"color\":\"yellow\",\"text\":\"",
+                "\"},~~,{\"color\":\"white\",\"text\":\"",
+                "\"},~~,{\"obfuscated\":true,\"text\":\"", "\"},~~,{\"bold\":true,\"text\":\"",
+                "\"},~~,{\"strikethrough\":true,\"text\":\"",
+                "\"},~~,{\"underlined\":true,\"text\":\"", "\"},~~,{\"italic\":true,\"text\":\"",
+                "", ""});
     }
 
-    public static String colourCodeToJson(String msg, String i) {
-        return msg.replace(i + "0", "\"},~~,{\"color\":\"black\",\"text\":\"")
-            .replace(i + "1", "\"},~~,{\"color\":\"dark_blue\",\"text\":\"")
-            .replace(i + "2", "\"},~~,{\"color\":\"dark_green\",\"text\":\"")
-            .replace(i + "3", "\"},~~,{\"color\":\"dark_aqua\",\"text\":\"")
-            .replace(i + "4", "\"},~~,{\"color\":\"dark_red\",\"text\":\"")
-            .replace(i + "5", "\"},~~,{\"color\":\"dark_purple\",\"text\":\"")
-            .replace(i + "6", "\"},~~,{\"color\":\"gold\",\"text\":\"")
-            .replace(i + "7", "\"},~~,{\"color\":\"gray\",\"text\":\"")
-            .replace(i + "8", "\"},~~,{\"color\":\"dark_gray\",\"text\":\"")
-            .replace(i + "9", "\"},~~,{\"color\":\"blue\",\"text\":\"")
-            .replace(i + "a", "\"},~~,{\"color\":\"green\",\"text\":\"")
-            .replace(i + "b", "\"},~~,{\"color\":\"aqua\",\"text\":\"")
-            .replace(i + "c", "\"},~~,{\"color\":\"red\",\"text\":\"")
-            .replace(i + "d", "\"},~~,{\"color\":\"light_purple\",\"text\":\"")
-            .replace(i + "e", "\"},~~,{\"color\":\"yellow\",\"text\":\"")
-            .replace(i + "f", "\"},~~,{\"color\":\"white\",\"text\":\"")
-            .replace(i + "k", "\"},~~,{\"obfuscated\":true,\"text\":\"")
-            .replace(i + "l", "\"},~~,{\"bold\":true,\"text\":\"")
-            .replace(i + "m", "\"},~~,{\"strikethrough\":true,\"text\":\"")
-            .replace(i + "n", "\"},~~,{\"underlined\":true,\"text\":\"")
-            .replace(i + "o", "\"},~~,{\"italic\":true,\"text\":\"")
-            .replace("\"text\":\"\"},~~,{", "").replace("\"text\":\"\"},{", "");
+    public static String[] stripCodes(String m) {
+        String[] ret;
+        int length = m.length();
+        if (length > 4) {
+            ret = new String[3];
+            if (m.charAt(0) == '&') {
+                ret[1] = m.substring(0, 2);
+            }
+            if (m.charAt(length - 2) == '&') {
+                ret[2] = m.substring(length - 2);
+            }
+        } else {
+            ret = new String[1];
+        }
+        ret[0] = StringUtils.replaceEach(m,
+            new String[] {"&0", "&1", "&2", "&3", "&4", "&5", "&6", "&7", "&8", "&9", "&a", "&b",
+                "&c", "&d", "&e", "&f", "&k", "&l", "&m", "&n", "&o"},
+            new String[] {"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+                "", "", ""});
+        return ret;
     }
 
     public static String jsonToColourCode(String msg, String reset) {
-        return msg.replaceAll("\"clickEvent\":\\{\"action\":\".*?\"\\},", "")
-            .replace("[{\"color\":\"black\",\"text\":\"", "&0")
-            .replace("[{\"color\":\"dark_blue\",\"text\":\"", "&1")
-            .replace("[{\"color\":\"dark_green\",\"text\":\"", "&2")
-            .replace("[{\"color\":\"dark_aqua\",\"text\":\"", "&3")
-            .replace("[{\"color\":\"dark_red\",\"text\":\"", "&4")
-            .replace("[{\"color\":\"dark_purple\",\"text\":\"", "&5")
-            .replace("[{\"color\":\"gold\",\"text\":\"", "&6")
-            .replace("[{\"color\":\"gray\",\"text\":\"", "&7")
-            .replace("[{\"color\":\"dark_gray\",\"text\":\"", "&8")
-            .replace("[{\"color\":\"blue\",\"text\":\"", "&9")
-            .replace("[{\"color\":\"green\",\"text\":\"", "&a")
-            .replace("[{\"color\":\"aqua\",\"text\":\"", "&b")
-            .replace("[{\"color\":\"red\",\"text\":\"", "&c")
-            .replace("[{\"color\":\"light_purple\",\"text\":\"", "&d")
-            .replace("[{\"color\":\"yellow\",\"text\":\"", "&e")
-            .replace("[{\"color\":\"white\",\"text\":\"", "&f")
-            .replace("[{\"obfuscated\":true,\"text\":\"", "&k")
-            .replace("[{\"bold\":true,\"text\":\"", "&l")
-            .replace("[{\"strikethrough\":true,\"text\":\"", "&m")
-            .replace("[{\"underlined\":true,\"text\":\"", "&n")
-            .replace("[{\"italic\":true,\"text\":\"", "&o").replace("[{\"color\":\"black\",", "&0")
-            .replace("[{\"color\":\"dark_blue\",", "&1")
-            .replace("[{\"color\":\"dark_green\",", "&2")
-            .replace("[{\"color\":\"dark_aqua\",", "&3").replace("[{\"color\":\"dark_red\",", "&4")
-            .replace("[{\"color\":\"dark_purple\",", "&5").replace("[{\"color\":\"gold\",", "&6")
-            .replace("[{\"color\":\"gray\",", "&7").replace("[{\"color\":\"dark_gray\",", "&8")
-            .replace("[{\"color\":\"blue\",", "&9").replace("[{\"color\":\"green\",", "&a")
-            .replace("[{\"color\":\"aqua\",", "&b").replace("[{\"color\":\"red\",", "&c")
-            .replace("[{\"color\":\"light_purple\",", "&d").replace("[{\"color\":\"yellow\",", "&e")
-            .replace("[{\"color\":\"white\",", "&f").replace("[{\"obfuscated\":true,", "&k")
-            .replace("[{\"bold\":true,", "&l").replace("[{\"strikethrough\":true,", "&m")
-            .replace("[{\"underlined\":true,", "&n").replace("[{\"italic\":true,", "&o")
-            .replace("{\"color\":\"black\",\"text\":\"", "&0")
-            .replace("{\"color\":\"dark_blue\",\"text\":\"", "&1")
-            .replace("{\"color\":\"dark_green\",\"text\":\"", "&2")
-            .replace("{\"color\":\"dark_aqua\",\"text\":\"", "&3")
-            .replace("{\"color\":\"dark_red\",\"text\":\"", "&4")
-            .replace("{\"color\":\"dark_purple\",\"text\":\"", "&5")
-            .replace("{\"color\":\"gold\",\"text\":\"", "&6")
-            .replace("{\"color\":\"gray\",\"text\":\"", "&7")
-            .replace("{\"color\":\"dark_gray\",\"text\":\"", "&8")
-            .replace("{\"color\":\"blue\",\"text\":\"", "&9")
-            .replace("{\"color\":\"green\",\"text\":\"", "&a")
-            .replace("{\"color\":\"aqua\",\"text\":\"", "&b")
-            .replace("{\"color\":\"red\",\"text\":\"", "&c")
-            .replace("{\"color\":\"light_purple\",\"text\":\"", "&d")
-            .replace("{\"color\":\"yellow\",\"text\":\"", "&e")
-            .replace("{\"color\":\"white\",\"text\":\"", "&f")
-            .replace("{\"obfuscated\":true,\"text\":\"", "&k")
-            .replace("{\"bold\":true,\"text\":\"", "&l")
-            .replace("{\"strikethrough\":true,\"text\":\"", "&m")
-            .replace("{\"underlined\":true,\"text\":\"", "&n")
-            .replace("{\"italic\":true,\"text\":\"", "&o").replace("{\"color\":\"black\",", "&0")
-            .replace("{\"color\":\"dark_blue\",", "&1").replace("{\"color\":\"dark_green\",", "&2")
-            .replace("{\"color\":\"dark_aqua\",", "&3").replace("{\"color\":\"dark_red\",", "&4")
-            .replace("{\"color\":\"dark_purple\",", "&5").replace("{\"color\":\"gold\",", "&6")
-            .replace("{\"color\":\"gray\",", "&7").replace("{\"color\":\"dark_gray\",", "&8")
-            .replace("{\"color\":\"blue\",", "&9").replace("{\"color\":\"green\",", "&a")
-            .replace("{\"color\":\"aqua\",", "&b").replace("{\"color\":\"red\",", "&c")
-            .replace("{\"color\":\"light_purple\",", "&d").replace("{\"color\":\"yellow\",", "&e")
-            .replace("{\"color\":\"white\",", "&f").replace("{\"obfuscated\":true,", "&k")
-            .replace("{\"bold\":true,", "&l").replace("{\"strikethrough\":true,", "&m")
-            .replace("{\"underlined\":true,", "&n").replace("{\"italic\":true,", "&o")
-            .replace("\"color\":\"black\",\"text\":\"", "&0")
-            .replace("\"color\":\"dark_blue\",\"text\":\"", "&1")
-            .replace("\"color\":\"dark_green\",\"text\":\"", "&2")
-            .replace("\"color\":\"dark_aqua\",\"text\":\"", "&3")
-            .replace("\"color\":\"dark_red\",\"text\":\"", "&4")
-            .replace("\"color\":\"dark_purple\",\"text\":\"", "&5")
-            .replace("\"color\":\"gold\",\"text\":\"", "&6")
-            .replace("\"color\":\"gray\",\"text\":\"", "&7")
-            .replace("\"color\":\"dark_gray\",\"text\":\"", "&8")
-            .replace("\"color\":\"blue\",\"text\":\"", "&9")
-            .replace("\"color\":\"green\",\"text\":\"", "&a")
-            .replace("\"color\":\"aqua\",\"text\":\"", "&b")
-            .replace("\"color\":\"red\",\"text\":\"", "&c")
-            .replace("\"color\":\"light_purple\",\"text\":\"", "&d")
-            .replace("\"color\":\"yellow\",\"text\":\"", "&e")
-            .replace("\"color\":\"white\",\"text\":\"", "&f")
-            .replace("\"obfuscated\":true,\"text\":\"", "&k")
-            .replace("\"bold\":true,\"text\":\"", "&l")
-            .replace("\"strikethrough\":true,\"text\":\"", "&m")
-            .replace("\"underlined\":true,\"text\":\"", "&n")
-            .replace("\"italic\":true,\"text\":\"", "&o").replace("\"color\":\"black\",", "&0")
-            .replace("\"color\":\"dark_blue\",", "&1").replace("\"color\":\"dark_green\",", "&2")
-            .replace("\"color\":\"dark_aqua\",", "&3").replace("\"color\":\"dark_red\",", "&4")
-            .replace("\"color\":\"dark_purple\",", "&5").replace("\"color\":\"gold\",", "&6")
-            .replace("\"color\":\"gray\",", "&7").replace("\"color\":\"dark_gray\",", "&8")
-            .replace("\"color\":\"blue\",", "&9").replace("\"color\":\"green\",", "&a")
-            .replace("\"color\":\"aqua\",", "&b").replace("\"color\":\"red\",", "&c")
-            .replace("\"color\":\"light_purple\",", "&d").replace("\"color\":\"yellow\",", "&e")
-            .replace("\"color\":\"white\",", "&f").replace("\"obfuscated\":true,", "&k")
-            .replace("\"bold\":true,", "&l").replace("\"strikethrough\":true,", "&m")
-            .replace("\"underlined\":true,", "&n").replace("\"italic\":true,", "&o")
-            .replace("[{\"text\":\"", reset).replace("{\"text\":\"", reset).replace("\"},", "")
-            .replace("\"}]", "").replace("\"}", "");
+        return StringUtils.replaceEach(
+            msg.replaceAll("\"clickEvent\":\\{\"action\":\"open_url\",\"value\":\".*?\"},", ""),
+            jsonColour, replaceJsonColourTo).replace("[{\"text\":\"", reset)
+            .replace("{\"text\":\"", reset).replace("\"},", "").replace("\"}]", "")
+            .replace("\"}", "");
+    }
+
+    public static String singleJson(String s) {
+        return StringUtils.replaceEach(s, codeColour, singleJson);
     }
 }
