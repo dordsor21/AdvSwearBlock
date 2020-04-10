@@ -114,7 +114,7 @@ public class PlayerSignPacketListener implements Listener {
                                         StringBuilder c = new StringBuilder("{\"text\":\"");
                                         for (String w : words) {//iterate through all the words in the packet's message
                                             String temp =
-                                                Json.stripCodes(w.replaceAll("[^a-zA-Z\\d&_]", ""));
+                                                Json.stripCodes(w.replaceAll("[^a-zA-Z\\d&_]", ""))[0];
                                             if (Bukkit.getPlayer(temp) == null) {
                                                 try {
                                                     String testTemp =
