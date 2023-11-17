@@ -225,7 +225,7 @@ public abstract class AbstractChatPacketListener implements Listener {
             message = message.substring(3);
         }
 
-        String chat = message.replace("§", "&").substring(0, message.length() - 1);
+        String chat = message.replace("§§", "&").substring(0, message.length() - 1);
         String chatt = chat;
 
         HashMap<String, Boolean> chatHasStyle = new HashMap<>();
