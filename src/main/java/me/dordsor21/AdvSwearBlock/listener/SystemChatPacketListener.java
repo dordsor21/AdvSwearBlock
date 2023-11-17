@@ -25,7 +25,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import io.papermc.lib.PaperLib;
 import me.dordsor21.AdvSwearBlock.AdvSwearBlock;
 import me.dordsor21.AdvSwearBlock.util.Json;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,7 +35,8 @@ import java.util.UUID;
 
 public class SystemChatPacketListener extends AbstractChatPacketListener {
 
-    private static final Logger LOGGER = LogManager.getLogger("AdvSwearBlock/" + SystemChatPacketListener.class.getSimpleName());
+    private static final Logger LOGGER =
+        LogManager.getLogger("AdvSwearBlock/" + SystemChatPacketListener.class.getSimpleName());
 
     public SystemChatPacketListener(AdvSwearBlock pl, ProtocolManager pM) {
         super(pl, pM);
@@ -70,7 +71,7 @@ public class SystemChatPacketListener extends AbstractChatPacketListener {
             Object obj = modifier.read(0);
             String json = null;
             boolean adventure = false;
-            if (PaperLib.isPaper() && obj instanceof TextComponent component) {
+            if (PaperLib.isPaper() && obj instanceof Component component) {
                 adventure = true;
                 json = GsonComponentSerializer.gson().serialize(component);
             } else if (obj instanceof String str) {
@@ -84,7 +85,8 @@ public class SystemChatPacketListener extends AbstractChatPacketListener {
                     LOGGER.error(
                         " Please install a chat-altering plugin such as essentials, or a chat plugin that applies prefixes, etc.");
                     LOGGER.error(
-                        " Packet value types: " + modifier.getFields().stream().map(f -> f.getField().getType().getName()).toList());
+                        " Packet value types: " + modifier.getFields().stream().map(f -> f.getField().getType().getName())
+                            .toList());
                 }
                 return;
             }

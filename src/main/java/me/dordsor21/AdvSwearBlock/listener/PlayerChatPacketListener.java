@@ -27,7 +27,7 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import io.papermc.lib.PaperLib;
 import me.dordsor21.AdvSwearBlock.AdvSwearBlock;
 import me.dordsor21.AdvSwearBlock.util.Json;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.apache.logging.log4j.LogManager;
@@ -88,7 +88,7 @@ public class PlayerChatPacketListener extends AbstractChatPacketListener {
                     if (val instanceof BaseComponent[] baseComponents) {
                         json = Json.fromReadJson(ComponentConverter.fromBaseComponent(baseComponents).getJson());
                         break;
-                    } else if (PaperLib.isPaper() && val instanceof TextComponent component) {
+                    } else if (PaperLib.isPaper() && val instanceof Component component) {
                         json = GsonComponentSerializer.gson().serialize(component);
                         adventure = true;
                         break;

@@ -80,9 +80,6 @@ public abstract class AbstractChatPacketListener implements Listener {
 
     abstract void registerListener(ProtocolManager pM);
 
-    protected record ParseResult(String msg, String cCMsg, String s1, String chat, String chatt) {
-    }
-
     @Nullable
     protected ParseResult getResult(PacketEvent e, String msg, UUID puuid, boolean actuallyEdited, Player p) {
         //if a player puts &e in chat, it won't make it a colour when converting back to Json
@@ -259,5 +256,9 @@ public abstract class AbstractChatPacketListener implements Listener {
         logger.error("chatt " + result.chatt());
         logger.error("Final " + result.chat());
         logger.error(ex);
+    }
+
+
+    protected record ParseResult(String msg, String cCMsg, String s1, String chat, String chatt) {
     }
 }
