@@ -1,27 +1,28 @@
 name: AdvSwearBlock
-main: me.dordsor21.AdvSwearBlock.Main
-version: 1.0.4
+main: me.dordsor21.AdvSwearBlock.AdvSwearBlock
+version: 2.0.0
 author: dordsor21
 description: Advanced swear-blocking (toggleable per player). Optional ignoring, CAPS-blocking and s p a c e-blocking.
 depend: [ ProtocolLib ]
+api-version: 1.20
 commands:
-    asb:
-      description: Admin command. Reload aspects of plugin.
-    ignore:
-      description: Ignore players.
-      aliases: [ignr, ignored, ig]
-    swearblock:
-      description: Toggle swear block.
-      aliases: [sb, swearwords, swearlist]
+  asb:
+    description: Admin command. Reload aspects of plugin.
+  ignore:
+    description: Ignore players.
+    aliases: [ ignr, ignored, ig ]
+  swearblock:
+    description: Toggle swear block.
+    aliases: [ sb, swearwords, swearlist ]
 permissions:
-    asb.*:
-      description: Gives access to all AdvSwearBlock commands
-      children:
-        asb.admin: true
-        asb.ignore: true
-        asb.unignore: true
-        asb.list: true
-        asb.swear: true
-        asb.swear.toggle: true
-        asb.bypass.cooldown: true
-        asb.bypass.spacecheck: true
+  asb.*:
+    description: Gives access to all AdvSwearBlock commands
+    children:
+      asb.admin: true
+      asb.ignore: true
+      asb.unignore: true
+      asb.list: true
+      asb.swear: true
+      asb.swear.toggle: true
+      asb.bypass.cooldown: true
+      asb.bypass.spacecheck: true

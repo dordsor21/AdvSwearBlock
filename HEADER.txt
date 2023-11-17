@@ -15,24 +15,3 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package me.dordsor21.AdvSwearBlock.util;
-
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-
-import java.util.UUID;
-
-public class UUIDs {
-
-    public UUID getUUIDFromName(String username) {
-        OfflinePlayer p = Bukkit.getPlayer(username);
-        if (p == null) {
-            p = Bukkit.getOfflinePlayer(username);
-        }
-        return p.getUniqueId();
-    }
-
-    String niceUUID(UUID uuid) {
-        return uuid.toString().replace("-", "");
-    }
-}

@@ -22,34 +22,28 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.ComponentConverter;
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import io.papermc.lib.PaperLib;
 import me.dordsor21.AdvSwearBlock.AdvSwearBlock;
 import me.dordsor21.AdvSwearBlock.util.Json;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.md_5.bungee.api.chat.BaseComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
-public class PlayerChatPacketListener extends AbstractChatPacketListener {
+public class SystemChatPacketListener extends AbstractChatPacketListener {
 
-    private static final Logger LOGGER =
-        LogManager.getLogger("AdvSwearBlock/" + PlayerChatPacketListener.class.getSimpleName());
+    private static final Logger LOGGER = LogManager.getLogger("AdvSwearBlock/" + SystemChatPacketListener.class.getSimpleName());
 
-    public PlayerChatPacketListener(AdvSwearBlock pl, ProtocolManager pM) {
+    public SystemChatPacketListener(AdvSwearBlock pl, ProtocolManager pM) {
         super(pl, pM);
     }
 
     @Override
     public void registerListener(ProtocolManager pM) {
-        pM.addPacketListener(new SBPacketAdapter(pl, ListenerPriority.HIGHEST, PacketType.Play.Server.CHAT));
+        pM.addPacketListener(new SBPacketAdapter(pl, ListenerPriority.HIGHEST, PacketType.Play.Server.SYSTEM_CHAT));
     }
 
     private class SBPacketAdapter extends PacketAdapter {
@@ -60,7 +54,7 @@ public class PlayerChatPacketListener extends AbstractChatPacketListener {
 
         @Override
         public void onPacketSending(PacketEvent e) {
-            if (e.getPacketType() != PacketType.Play.Server.CHAT) {
+            if (e.getPacketType() != PacketType.Play.Server.SYSTEM_CHAT) {
                 return;
             }
             Player p = e.getPlayer();
@@ -71,46 +65,32 @@ public class PlayerChatPacketListener extends AbstractChatPacketListener {
 
             //false unless the chat packet has actually been edited. improves performance and reduces bugs
             boolean actuallyEdited = false;
+
+            var modifier = e.getPacket().getModifier();
+            Object obj = modifier.read(0);
             String json = null;
-            WrappedChatComponent wcc = e.getPacket().getChatComponents().read(0);
-            boolean isWcc = wcc != null;
             boolean adventure = false;
-            int index = -1;
-            if (!isWcc) {
-                var modifier = e.getPacket().getModifier();
-                List<String> types = new ArrayList<>();
-                for (Object val : modifier.getValues()) {
-                    index++;
-                    if (val == null) {
-                        continue;
-                    }
-                    types.add(val.getClass().getName());
-                    if (val instanceof BaseComponent[] baseComponents) {
-                        json = Json.fromReadJson(ComponentConverter.fromBaseComponent(baseComponents).getJson());
-                        break;
-                    } else if (PaperLib.isPaper() && val instanceof TextComponent component) {
-                        json = GsonComponentSerializer.gson().serialize(component);
-                        adventure = true;
-                        break;
-                    }
+            if (PaperLib.isPaper() && obj instanceof TextComponent component) {
+                adventure = true;
+                json = GsonComponentSerializer.gson().serialize(component);
+            } else if (obj instanceof String str) {
+                json = str;
+            }
+            if (json == null) {
+                if (!pl.failSilent) {
+                    LOGGER.error("Could not identify chat component from packet: " + e.getPacket().toString());
+                    LOGGER.error(
+                        " It is possible this is due to using vanilla chat messaging (currently unsupported due to message signing issues)");
+                    LOGGER.error(
+                        " Please install a chat-altering plugin such as essentials, or a chat plugin that applies prefixes, etc.");
+                    LOGGER.error(
+                        " Packet value types: " + modifier.getFields().stream().map(f -> f.getField().getType().getName()).toList());
                 }
-                if (json == null) {
-                    if (!pl.failSilent) {
-                        LOGGER.error("Could not identify chat component from packet: " + e.getPacket().toString());
-                        LOGGER.error(
-                            " It is possible this is due to using vanilla chat messaging on paper (currently unsupported due to message signing issues)");
-                        LOGGER.error(
-                            " Please install a chat-altering plugin such as essentials, or a chat plugin that applies prefixes, etc.");
-                        LOGGER.error(" Packet value types: " + types);
-                    }
-                    return;
-                }
-            } else {
-                json = Json.fromReadJson(wcc.getJson());
+                return;
             }
 
             //parse the packet to be nice and readable.
-            String aRMsg = json;
+            String aRMsg = Json.fromReadJson(json);
 
             //#circumstances in which we don't want to edit packets
             if (aRMsg.contains(",{\"color\":\"gold\",\"text\":\"\"}]") || aRMsg.contains("\"action\":\"run_command\",")
@@ -119,7 +99,6 @@ public class PlayerChatPacketListener extends AbstractChatPacketListener {
                 return;
             }
 
-            //if a player puts &e in chat, it won't make it a colour when converting back to Json
             ParseResult result = getResult(e, aRMsg, puuid, actuallyEdited, p);
             if (result == null) {
                 return;
@@ -127,15 +106,10 @@ public class PlayerChatPacketListener extends AbstractChatPacketListener {
 
             try {
                 String finalStr = "[" + result.chat() + ",{\"text\":\"\",\"color\":\"gold\"}]";
-                if (isWcc) {
-                    e.getPacket().getChatComponents().write(0, WrappedChatComponent.fromJson(finalStr));
+                if (adventure) {
+                    e.getPacket().getModifier().write(0, GsonComponentSerializer.gson().deserialize(finalStr));
                 } else {
-                    if (adventure) {
-                        e.getPacket().getModifier().write(0, GsonComponentSerializer.gson().deserialize(finalStr));
-                    } else {
-                        e.getPacket().getModifier()
-                            .write(index, ComponentConverter.fromWrapper(WrappedChatComponent.fromJson(finalStr)));
-                    }
+                    e.getPacket().getModifier().write(0, finalStr);
                 }
             } catch (Exception ex) {
                 if (pl.failSilent) {
