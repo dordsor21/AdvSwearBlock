@@ -15,22 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package me.dordsor21.AdvSwearBlock;
+package me.dordsor21.advswearblock;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import me.dordsor21.AdvSwearBlock.cmd.IgnoreCmd;
-import me.dordsor21.AdvSwearBlock.cmd.MainCmd;
-import me.dordsor21.AdvSwearBlock.cmd.SwearWordCmd;
-import me.dordsor21.AdvSwearBlock.listener.ChatListener;
-import me.dordsor21.AdvSwearBlock.listener.JoinLeaveListener;
-import me.dordsor21.AdvSwearBlock.listener.PlayerChatPacketListener;
-import me.dordsor21.AdvSwearBlock.listener.PlayerSignPacketListener;
-import me.dordsor21.AdvSwearBlock.listener.SystemChatPacketListener;
-import me.dordsor21.AdvSwearBlock.util.Ignore;
-import me.dordsor21.AdvSwearBlock.util.SQL;
-import me.dordsor21.AdvSwearBlock.util.SwearList;
-import me.dordsor21.AdvSwearBlock.util.UUIDs;
+import me.dordsor21.advswearblock.cmd.IgnoreCmd;
+import me.dordsor21.advswearblock.cmd.MainCmd;
+import me.dordsor21.advswearblock.cmd.SwearWordCmd;
+import me.dordsor21.advswearblock.listener.ChatListener;
+import me.dordsor21.advswearblock.listener.JoinLeaveListener;
+import me.dordsor21.advswearblock.listener.PlayerChatPacketListener;
+import me.dordsor21.advswearblock.listener.PlayerSignPacketListener;
+import me.dordsor21.advswearblock.listener.SystemChatPacketListener;
+import me.dordsor21.advswearblock.util.Ignore;
+import me.dordsor21.advswearblock.util.SQL;
+import me.dordsor21.advswearblock.util.SwearBlocker;
+import me.dordsor21.advswearblock.util.SwearList;
+import me.dordsor21.advswearblock.util.UUIDs;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.ChatColor;
@@ -56,6 +57,7 @@ public class AdvSwearBlock extends JavaPlugin {
     public boolean ignoring;
     public Map<String, String> messages;
     public boolean failSilent;
+    public SwearBlocker swearBlocker;
     private String prefix;
     private boolean signs;
     private PlayerChatPacketListener playerChatPacketListener;
@@ -110,6 +112,7 @@ public class AdvSwearBlock extends JavaPlugin {
         pM = ProtocolLibrary.getProtocolManager();
 
         swearList = new SwearList(this);
+        swearBlocker = new SwearBlocker(this);
 
         playerChatPacketListener = new PlayerChatPacketListener(this, pM);
         systemChatPacketListener = new SystemChatPacketListener(this, pM);

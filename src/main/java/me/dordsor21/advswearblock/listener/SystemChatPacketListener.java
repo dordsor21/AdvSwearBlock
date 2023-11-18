@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package me.dordsor21.AdvSwearBlock.listener;
+package me.dordsor21.advswearblock.listener;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
@@ -23,8 +23,8 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import io.papermc.lib.PaperLib;
-import me.dordsor21.AdvSwearBlock.AdvSwearBlock;
-import me.dordsor21.AdvSwearBlock.util.Json;
+import me.dordsor21.advswearblock.AdvSwearBlock;
+import me.dordsor21.advswearblock.util.Json;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.apache.logging.log4j.LogManager;
@@ -107,7 +107,7 @@ public class SystemChatPacketListener extends AbstractChatPacketListener {
             }
 
             try {
-                String finalStr = "[" + result.chat() + ",{\"text\":\"\",\"color\":\"gold\"}]";
+                String finalStr = "[" + result.finalResult() + ",{\"text\":\"\",\"color\":\"gold\"}]";
                 if (adventure) {
                     e.getPacket().getModifier().write(0, GsonComponentSerializer.gson().deserialize(finalStr));
                 } else {

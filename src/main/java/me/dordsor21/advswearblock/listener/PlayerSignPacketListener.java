@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package me.dordsor21.AdvSwearBlock.listener;
+package me.dordsor21.advswearblock.listener;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
@@ -25,9 +25,9 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.BukkitConverters;
 import com.comphenix.protocol.wrappers.nbt.NbtBase;
 import com.comphenix.protocol.wrappers.nbt.NbtCompound;
-import me.dordsor21.AdvSwearBlock.AdvSwearBlock;
-import me.dordsor21.AdvSwearBlock.util.Json;
-import org.apache.commons.lang3.StringUtils;
+import me.dordsor21.advswearblock.AdvSwearBlock;
+import me.dordsor21.advswearblock.util.Json;
+import me.dordsor21.advswearblock.util.SwearBlocker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
@@ -35,9 +35,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
@@ -65,15 +63,9 @@ public class PlayerSignPacketListener implements Listener {
     }
 
     private final AdvSwearBlock pl;
-    private final double multiplier;
-    private final int incr;
 
     public PlayerSignPacketListener(AdvSwearBlock pl, ProtocolManager pM) {
         this.pl = pl;
-        this.multiplier = pl.getConfig().getDouble("swearing.swearWordMultiplier") >= 1 ?
-            pl.getConfig().getDouble("swearing.swearWordMultiplier") :
-            1;
-        this.incr = pl.getConfig().getInt("swearing.noMultiplierIncrement");
 
         Bukkit.getPluginManager().registerEvents(this, pl);
 
@@ -147,14 +139,9 @@ public class PlayerSignPacketListener implements Listener {
                     json = split[0].replace("{\"extra\":[{", "[{\"text\":\"" + start + "\"},{") + "]";
                 }
                 String text = Json.jsonToColourCode(json.replace("&", "§§"), "&0");
-                List<String> mList = pl.swearList.getList().get("multiplier");
-                List<String> nomList = pl.swearList.getList().get("nomultiplier");
-                List<String> oList = pl.swearList.getList().get("onlymatch");
-                List<String> both = new ArrayList<>();
-                both.addAll(mList);
-                both.addAll(nomList);
+
                 String regexedMsg = text;
-                for (String word : both) {
+                for (String word : pl.swearBlocker.allPatterns.keySet()) {
                     StringBuilder regex = new StringBuilder("((?<=&[a-fk-o\\d])|(^|(?<=\\s)))(").append(word.charAt(0))
                         .append("((&[a-fk-o\\d]))|").append(word.charAt(0)).append(")+");
                     for (int j = 1; j < word.length(); j++) {
@@ -173,112 +160,42 @@ public class PlayerSignPacketListener implements Listener {
                 }
                 String[] words = regexedMsg.split(" ");
                 StringBuilder c = new StringBuilder("{\"text\":\"");
-                for (String w : words) {//iterate through all the words in the packet's message
+                for (String w : words) {
                     String temp = Json.stripCodes(w.replaceAll("[^a-zA-Z\\d&_]", ""))[0];
                     if (Bukkit.getPlayer(temp) != null) {
                         c.append(w).append(" ");
                         continue;
                     }
                     try {
-                        String testTemp = temp.replaceAll("\\d", "").replace("_", "").toLowerCase();
-
-                        if (pl.ignoreSwear.contains(testTemp)) {
-                            continue;
-                        }
-
-                        List<String> badmul = new ArrayList<>();
-                        List<String> badt = new ArrayList<>();
-                        List<String> bado = new ArrayList<>();
-                        mList.forEach(s -> {
-                            if (testTemp.contains(s)) {
-                                badmul.add(s);
-                            }
-                        });
-                        nomList.forEach(s -> {
-                            if (testTemp.contains(s)) {
-                                badt.add(s);
-                            }
-                        });
-                        oList.forEach(s -> {
-                            if (testTemp.equalsIgnoreCase(s)) {
-                                bado.add(s);
-                            }
-                        });
-                        String bad1 = null;
-                        String bad2 = null;
-                        String bad3 = null;
-                        boolean multiple = false;
-                        if (!(badmul.size() > 1 || badt.size() > 1 || bado.size() > 1 || (!badmul.isEmpty()
-                            && StringUtils.countMatches(testTemp, badmul.get(0)) > 1) || (!badt.isEmpty()
-                            && StringUtils.countMatches(testTemp, badt.get(0)) > 1)) || (!bado.isEmpty()
-                            && StringUtils.countMatches(testTemp, bado.get(0)) > 1)) {
-                            bad1 = !badmul.isEmpty() ? badmul.get(0) : null;
-                            bad2 = !badt.isEmpty() ? badt.get(0) : null;
-                            bad3 = !bado.isEmpty() ? bado.get(0) : null;
-                        } else {
-                            multiple = true;
-                        }
-                        if (multiple || (bad1 != null && !bad1.isEmpty() && (testTemp.length()
-                            <= multiplier * bad1.length())) || (bad2 != null && testTemp.length() <= bad2.length() + incr)
-                            || bad3 != null) {
-                            c.append(w.replaceAll("(((?<!&)[a-fk-o\\d])|[g-jp-zA-Z_])", "*")).append(" ");
+                        SwearBlocker.Result result = pl.swearBlocker.removeSwears(w, temp, c);
+                        if (result == SwearBlocker.Result.EDITED) {
                             actuallyEdited = true;
-                            continue;
+                        } else if (result == SwearBlocker.Result.FALLTHROUGH) {
+                            c.append(w).append(" ");
                         }
                     } catch (NoSuchElementException ignored) {
                     }
-                    c.append(w).append(" ");
                 }
-                String s2 = c.toString();
-                String s3 = c.toString();
                 //only actually resend/etc the packet if we've edited it.
                 if (!actuallyEdited) {
                     continue;
                 }
-                edited = true;
-                if (s3.endsWith(",")) {
-                    s3 = s3.substring(0, s3.length() - 1);
-                }
-                if (s3.endsWith(" ")) {
-                    s3 = s3.substring(0, s3.length() - 1);
-                }
-                String message = Json.colourCodeToJson(s3 + "\"}]", "&");
-                if (message.startsWith("\"},")) {
-                    message = message.substring(3);
-                }
 
-                String sign = message.replace("§§", "&").substring(0, message.length() - 1);
-
-                s3 = sign;
-
-                HashMap<String, Boolean> chatHasStyle = new HashMap<>();
-                for (String style : new String[] {"bold", "italics", "underline"})
-                    chatHasStyle.put(style, sign.contains("\"" + style + "\":true"));
-
-                String[] chatParts = sign.split(",~~,");
-                int j = 0;
-                for (String part : chatParts) {
-                    StringBuilder partBuilder = new StringBuilder(part.substring(0, part.length() - 1));
-                    for (String style : chatHasStyle.keySet())
-                        if (chatHasStyle.get(style) && !partBuilder.toString().contains("\"" + style + "\":")) {
-                            partBuilder.append(",\"").append(style).append("\":false");
-                        }
-                    part = partBuilder.append("}").toString();
-                    sign = sign.replace(chatParts[j], part);
-                    j++;
-                }
-                sign = sign.replace(",~~,", ",").replace("{\"text\":\"\"}", "").replaceAll("(^,+)|(,+$)", "");
+                SwearBlocker.FinaliseResult result = SwearBlocker.finalise(c);
+                String sign =
+                    result.result().replace(",~~,", ",").replace("{\"text\":\"\"}", "").replaceAll("(^,+)|(,+$)", "");
                 String finalStr = "{\"extra\":[" + sign + "],\"text\":\"\"}";
                 try {
                     line.setValue(finalStr);
+                    edited = true;
                 } catch (Exception ex) {
                     LOGGER.error("Error Editing Sign Packet. Please report this to GitLab");
                     LOGGER.error("json: " + json);
                     LOGGER.error("text: " + text);
                     LOGGER.error("regexed: " + regexedMsg);
-                    LOGGER.error("s2: " + s2);
-                    LOGGER.error("s3: " + s3);
-                    LOGGER.error("sign: " + sign);
+                    LOGGER.error("subbed " + result.subbed());
+                    LOGGER.error("mid " + result.mid());
+                    LOGGER.error("final: " + sign);
                     LOGGER.error(ex);
                 }
             }

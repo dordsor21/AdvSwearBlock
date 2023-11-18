@@ -15,10 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package me.dordsor21.AdvSwearBlock.cmd;
+package me.dordsor21.advswearblock.cmd;
 
-import me.dordsor21.AdvSwearBlock.AdvSwearBlock;
-import me.dordsor21.AdvSwearBlock.util.Ignore;
+import me.dordsor21.advswearblock.AdvSwearBlock;
+import me.dordsor21.advswearblock.util.Ignore;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

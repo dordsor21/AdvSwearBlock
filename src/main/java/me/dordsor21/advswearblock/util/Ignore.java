@@ -15,9 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package me.dordsor21.AdvSwearBlock.util;
+package me.dordsor21.advswearblock.util;
 
-import me.dordsor21.AdvSwearBlock.AdvSwearBlock;
+import me.dordsor21.advswearblock.AdvSwearBlock;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,8 +25,8 @@ import java.util.UUID;
 
 public class Ignore {
 
+    public final List<String> cannotIgnore;
     private final HashMap<UUID, List<String>> ignoreCache;
-    public List<String> cannotIgnore;
 
     public Ignore(AdvSwearBlock plugin) {
         ignoreCache = new HashMap<>();

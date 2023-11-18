@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package me.dordsor21.AdvSwearBlock.listener;
+package me.dordsor21.advswearblock.listener;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
@@ -25,8 +25,8 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.ComponentConverter;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import io.papermc.lib.PaperLib;
-import me.dordsor21.AdvSwearBlock.AdvSwearBlock;
-import me.dordsor21.AdvSwearBlock.util.Json;
+import me.dordsor21.advswearblock.AdvSwearBlock;
+import me.dordsor21.advswearblock.util.Json;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -72,6 +72,7 @@ public class PlayerChatPacketListener extends AbstractChatPacketListener {
             //false unless the chat packet has actually been edited. improves performance and reduces bugs
             boolean actuallyEdited = false;
             String json = null;
+
             WrappedChatComponent wcc = e.getPacket().getChatComponents().read(0);
             boolean isWcc = wcc != null;
             boolean adventure = false;
@@ -126,7 +127,7 @@ public class PlayerChatPacketListener extends AbstractChatPacketListener {
             }
 
             try {
-                String finalStr = "[" + result.chat() + ",{\"text\":\"\",\"color\":\"gold\"}]";
+                String finalStr = "[" + result.finalResult() + ",{\"text\":\"\",\"color\":\"gold\"}]";
                 if (isWcc) {
                     e.getPacket().getChatComponents().write(0, WrappedChatComponent.fromJson(finalStr));
                 } else {

@@ -1,5 +1,5 @@
 name: AdvSwearBlock
-main: me.dordsor21.AdvSwearBlock.AdvSwearBlock
+main: me.dordsor21.advswearblock.AdvSwearBlock
 version: 2.0.0
 author: dordsor21
 description: Advanced swear-blocking (toggleable per player). Optional ignoring, CAPS-blocking and s p a c e-blocking.

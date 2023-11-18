@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package me.dordsor21.AdvSwearBlock.util;
+package me.dordsor21.advswearblock.util;
 
 import org.apache.commons.lang3.StringUtils;
 
