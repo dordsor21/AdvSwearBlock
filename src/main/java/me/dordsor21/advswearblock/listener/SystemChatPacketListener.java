@@ -68,15 +68,23 @@ public class SystemChatPacketListener extends AbstractChatPacketListener {
             boolean actuallyEdited = false;
 
             var modifier = e.getPacket().getModifier();
-            Object obj = modifier.read(0);
-            String json = null;
+            String componentJson = null;
+            String strJson = null;
             boolean adventure = false;
-            if (PaperLib.isPaper() && obj instanceof Component component) {
-                adventure = true;
-                json = GsonComponentSerializer.gson().serialize(component);
-            } else if (obj instanceof String str) {
-                json = str;
+            for (int i = 0; i < modifier.size(); i++) {
+                Object obj = modifier.read(i);
+                if (obj == null) {
+                    continue;
+                }
+                if (PaperLib.isPaper() && obj instanceof Component component) {
+                    adventure = true;
+                    componentJson = GsonComponentSerializer.gson().serialize(component);
+                } else if (obj instanceof String str) {
+                    strJson = str;
+                }
             }
+            // Prefer component
+            String json = componentJson != null ? componentJson : strJson;
             if (json == null) {
                 if (!pl.failSilent) {
                     LOGGER.error("Could not identify chat component from packet: " + e.getPacket().toString());
