@@ -77,25 +77,28 @@ public class AdvSwearBlock extends JavaPlugin {
         loadConfigValues();
         messages = new HashMap<>();
 
-        for (String message : getConfig().getConfigurationSection("messages").getValues(false).keySet())
+        for (String message : getConfig().getConfigurationSection("messages").getValues(false).keySet()) {
             messages.put(message,
                 ChatColor.translateAlternateColorCodes('&', prefix + getConfig().getString("messages." + message)));
+        }
 
         if (persistence) {
             sql = new SQL(this);
             try {
                 sql.initialise();
             } catch (Exception e) {
-                LOGGER.error("Error initialising SQL, disabling persistence, e");
+                LOGGER.error("Error initialising SQL, disabling persistence", e);
                 persistence = false;
                 getConfig().set("persistence", false);
+                saveConfig();
             }
         }
 
         if (ignoring && !persistence) {
-            LOGGER.error(prefix + " You cannot have ignoring enabled without persistence (MySQL)! Turning ignoring off!");
+            LOGGER.error("You cannot have ignoring enabled without persistence (MySQL)! Turning ignoring off!");
             ignoring = false;
             getConfig().set("ignoring.enabled", false);
+            saveConfig();
         }
 
         uuids = new UUIDs();
@@ -176,8 +179,10 @@ public class AdvSwearBlock extends JavaPlugin {
             ignore = new Ignore(this);
             getCommand("ignore").setExecutor(new IgnoreCmd(this, ignore));
         } else if (ignoring) {
-            LOGGER.error(prefix + " You cannot have ignoring enabled without persistence (MySQL)! Turning ignoring off!");
+            LOGGER.error("You cannot have ignoring enabled without persistence (MySQL)! Turning ignoring off!");
             ignoring = false;
+            getConfig().set("ignoring.enabled", false);
+            saveConfig();
         }
     }
 
@@ -185,9 +190,10 @@ public class AdvSwearBlock extends JavaPlugin {
         reloadConfig();
         messages = new HashMap<>();
         prefix = getConfig().getString("prefix");
-        for (String message : getConfig().getConfigurationSection("messages").getValues(false).keySet())
+        for (String message : getConfig().getConfigurationSection("messages").getValues(false).keySet()) {
             messages.put(message,
                 ChatColor.translateAlternateColorCodes('&', prefix + getConfig().getString("messages." + message)));
+        }
     }
 
     public void reloadPersistance() {
@@ -200,6 +206,14 @@ public class AdvSwearBlock extends JavaPlugin {
         if (persistence) {
             sql = new SQL(this);
             sql.initialise();
+            try {
+                sql.initialise();
+            } catch (Exception e) {
+                LOGGER.error("Error initialising SQL, disabling persistence", e);
+                persistence = false;
+                getConfig().set("persistence", false);
+                saveConfig();
+            }
         }
     }
 

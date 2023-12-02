@@ -116,6 +116,7 @@ public class MainCmd implements CommandExecutor {
 
     private void reload(final CommandSender sender, String[] args) {
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+            plugin.reloadConfig();
             if (args.length == 1) {
                 plugin.reloadConfigValues();
                 plugin.reloadPersistance();

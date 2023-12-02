@@ -97,7 +97,7 @@ public class PlayerChatPacketListener extends AbstractChatPacketListener {
                 }
                 if (json == null) {
                     if (!pl.failSilent) {
-                        LOGGER.error("Could not identify chat component from packet: " + e.getPacket().toString());
+                        LOGGER.error("Could not identify chat component from PlayerChatPacket");
                         LOGGER.error(
                             " It is possible this is due to using vanilla chat messaging on paper (currently unsupported due to message signing issues)");
                         LOGGER.error(

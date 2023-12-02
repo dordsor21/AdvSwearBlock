@@ -105,7 +105,9 @@ public class PlayerSignPacketListener implements Listener {
                             try {
                                 TILE_ENTITY_TAG.set(obj, converter.getGeneric(compound));
                             } catch (IllegalAccessException ex) {
-                                LOGGER.error("Error editing sign", ex);
+                                if (!pl.failSilent) {
+                                    LOGGER.error("Error editing sign", ex);
+                                }
                             }
                         }
                     }
@@ -189,14 +191,16 @@ public class PlayerSignPacketListener implements Listener {
                     line.setValue(finalStr);
                     edited = true;
                 } catch (Exception ex) {
-                    LOGGER.error("Error Editing Sign Packet. Please report this to GitLab");
-                    LOGGER.error("json: " + json);
-                    LOGGER.error("text: " + text);
-                    LOGGER.error("regexed: " + regexedMsg);
-                    LOGGER.error("subbed " + result.subbed());
-                    LOGGER.error("mid " + result.mid());
-                    LOGGER.error("final: " + sign);
-                    LOGGER.error(ex);
+                    if (!pl.failSilent) {
+                        LOGGER.error("Error Editing Sign Packet. Please report this to GitLab");
+                        LOGGER.error("json: " + json);
+                        LOGGER.error("text: " + text);
+                        LOGGER.error("regexed: " + regexedMsg);
+                        LOGGER.error("subbed " + result.subbed());
+                        LOGGER.error("mid " + result.mid());
+                        LOGGER.error("final: " + sign);
+                        LOGGER.error(ex);
+                    }
                 }
             }
         }

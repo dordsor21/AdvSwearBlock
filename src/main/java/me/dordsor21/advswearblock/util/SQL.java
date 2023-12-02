@@ -50,9 +50,8 @@ public class SQL {
     public void initialise() {
         FileConfiguration conf = plugin.getConfig();
         HikariConfig hikConf = new HikariConfig();
-        hikConf.setJdbcUrl(
-            String.format("jdbc://mysql://%s:%s/%s", conf.getString("SQL.hostname"), conf.getString("SQL.database"),
-                conf.getInt("SQL.port")));
+        hikConf.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s", conf.getString("SQL.hostname"), conf.getString("SQL.port"),
+            conf.getString("SQL.database")));
         hikConf.setUsername(conf.getString("SQL.username"));
         hikConf.setPassword(conf.getString("SQL.password"));
         dataSource = new HikariDataSource(hikConf);

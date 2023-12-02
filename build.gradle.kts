@@ -48,7 +48,7 @@ dependencies {
 }
 
 group = "me.dordsor21"
-version = "2.0.0"
+version = "2.0.0-SNAPSHOT"
 description = "AdvSwearBlock"
 
 spotless {
